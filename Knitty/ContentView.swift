@@ -7,17 +7,6 @@
 
 import SwiftUI
 
-func generateFullPattern(pattern: [String], n: Int) -> [String]{
-    var result: [String] = []
-    let length = pattern.count
-    
-    for i in 0..<n{
-        result.append(pattern[i % length])
-    }
-    
-    return result
-}
-
 struct ContentView: View {
     @State private var rowsNumber = 0
     @State private var currentPattern = ["k","p"]

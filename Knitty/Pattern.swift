@@ -7,7 +7,33 @@
 
 import Foundation
 
-//struct displayStitch
+enum RowElementType {
+    case stitch, marker, increase, decrease
+    static let abbreviations = [
+        "stitch": ["k", "p"],
+        "increase": ["m1l", "m1r"],
+        "decrease": ["k2tog"],
+        "marker": ["blue", "green"]
+    ]
+    
+    init?(from abbreviation: String) {
+        guard let elementType = Self.abbreviations.first(where: { $0.value.contains(abbreviation) }) else {
+            return nil
+        }
+        switch elementType.key {
+        case "stitch": self = .stitch
+        case "increase": self = .increase
+        case "decrease": self = .decrease
+        case "marker": self = .marker
+        default: return nil
+        }
+    }
+}
+
+struct RowElement {
+    var number: String
+    var abbreviation: String
+}
 
 struct Row: Codable {
     var fullRowPattern: [String]
@@ -15,61 +41,101 @@ struct Row: Codable {
     var count: Int {
         return fullRowPattern.count
     }
+    
     init(fullRowPattern: [String], rowExtras: [Int: String] = [:]) {
-        if Row.checkExtrasIndexes(rowExtras, count: fullRowPattern.count) {
+        if Self.checkExtrasIndexes(rowExtras, count: fullRowPattern.count) {
             self.rowExtras = rowExtras
         } else {
             self.rowExtras = rowExtras.filter { $0.key <= fullRowPattern.count }
         }
         self.fullRowPattern = fullRowPattern
     }
+    
     init(basePattern: [String], n numberOfStitches: Int, rowExtras: [Int: String] = [:]) {
-        self.fullRowPattern = Row.generateFullRowPattern(basePattern: basePattern, n: numberOfStitches)
+        self.fullRowPattern = Self.generateFullRowPattern(basePattern: basePattern, n: numberOfStitches)
         self.rowExtras = rowExtras
     }
+    
+    func displayRow() -> [RowElement] {
+        var rowElements: [RowElement] = []
+        for i in 1...fullRowPattern.count {
+            rowElements.append(RowElement(number: "\(i)", abbreviation: fullRowPattern[i-1]))
+        }
+        for (position, abbreviation) in rowExtras{
+            let elementType = RowElementType(from: abbreviation)
+            switch elementType{
+            case .increase:
+                rowElements.insert(RowElement(number: "\(position)+", abbreviation: abbreviation), at: position)
+            case .decrease:
+                rowElements[position] = RowElement(number: "-", abbreviation: abbreviation)
+            case .marker:
+                rowElements[position] = RowElement(number: " ", abbreviation: "M")
+            default:
+                return rowElements //add some warning or error
+            }
+        }
+        return rowElements
+    }
+    
     static func generateFullRowPattern(basePattern: [String], n: Int) -> [String] {
         var result: [String] = []
         let length = basePattern.count
         
-        for i in 0..<n{
+        for i in 0..<n {
             result.append(basePattern[i % length])
         }
         
         return result
     }
+    
     static func checkExtrasIndexes(_ newExtras: [Int: String], count: Int) -> Bool {
-        for i in newExtras.keys{
-            guard i <= count else{
-                return false
-            }
+        guard newExtras.allSatisfy( {$0.key < count}) else {
+            return false
         }
         return true
     }
 }
 
-struct Pattern: Identifiable, Codable{
+struct Pattern: Identifiable, Codable {
     var id = UUID()
     var name: String
     var rows: [Row]
-    mutating func updateRow(at index: Int, newRow: Row){
-        guard newRow.count == rows[index].count else{
+    var count: Int {
+        rows.count
+    }
+    
+    func displayRow(at index: Int) -> [RowElement]{
+        rows[index].displayRow()
+    }
+    
+    mutating func updateRow(at index: Int, newRow: Row) {
+        guard newRow.count == rows[index].count else {
             return
         }
         rows[index] = newRow
     }
-    mutating func addRow(newRow: Row){
+    
+    mutating func addRow(newRow: Row) {
         rows.append(newRow)
     }
+    
     mutating func updateRowExtras(at index: Int, newExtras: [Int: String]) {
         guard Row.checkExtrasIndexes(newExtras, count: rows[index].count) else {
             return
         }
         rows[index].rowExtras = newExtras
     }
+    
     mutating func updateFullRowPattern(at index: Int, newPattern: [String]) {
-        guard newPattern.count == rows[index].count else{
+        guard newPattern.count == rows[index].count else {
             return
         }
         rows[index].fullRowPattern = newPattern
     }
+}
+
+extension Pattern{
+    static let example = Pattern(name: "Example Pattern", rows: (0..<50).map { _ in Row(basePattern: ["k", "k", "p", "p"], n: 42) })
+    
+    
 }
