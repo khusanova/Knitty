@@ -8,24 +8,23 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State private var rowsNumber = 0
-    @State private var currentPattern = ["k","p"]
-    var fullPattern: [String]{ generateFullPattern(pattern: currentPattern, n: 50)
-    }
+    @State private var rowNumber = 0
+    @State private var currentPattern = Pattern.example
+    var currentRow: [RowElement] { currentPattern.displayRow(at: rowNumber)}
     var body: some View {
         VStack {
             Text("🧶 Knit!!!").font(.largeTitle)
-            Text("Number of completed rows: \(rowsNumber)")
-            Text("You are at the row \(rowsNumber+1)")
+            Text("You are at the row \(rowNumber)")
             HStack{
                 Text("Follow this pattern: ")
             }
             ScrollView(.horizontal) {
                   HStack {
-                      ForEach(0..<50){ i in
+                      ForEach(0..<currentRow.count){ i in
                           VStack{
-                              Text("\(i)")
-                              Text("\(fullPattern[i])")
+                              Text("\(currentRow[i].number)")
+                              
+                              Text("\(currentRow[i].abbreviation)")
                           }
                       }
                   }
@@ -34,11 +33,11 @@ struct ContentView: View {
             
             HStack {
                   Button("-1") {
-                      rowsNumber -= 1
+                      rowNumber -= 1
                   }
-                                                                                                      
+                                                        
                   Button("+1") {
-                      rowsNumber += 1
+                      rowNumber += 1
                   }
               }
         }
