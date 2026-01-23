@@ -159,6 +159,16 @@ struct Pattern: Identifiable, Codable {
         }
         rows[index].fullRowPattern = newPattern
     }
+    
+    mutating func append(_ pattern: Pattern){
+        self.rows += pattern.rows
+    }
+    
+    static func + (lhs: Pattern, rhs: Pattern) -> Pattern{
+        var result = lhs
+        result.append(rhs)
+        return result
+    }
 }
 
 extension Row{
