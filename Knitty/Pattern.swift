@@ -103,6 +103,8 @@ struct Pattern: Identifiable, Codable {
     var count: Int {
         rows.count
     }
+    var details: String = ""
+    var patternURL: URL?
     
     func displayRow(at index: Int) -> [RowElement]{
         rows[index].displayRow()
