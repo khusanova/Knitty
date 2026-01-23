@@ -14,7 +14,7 @@ enum RowElementType {
         "increase": ["m1l", "m1r"],
         "decrease": ["k2tog"],
         "marker": ["blue", "green"],
-        "end of needle": ["blue", "green"]
+        "end of needle": ["end of needle"]
     ]
     
     init?(from abbreviation: String) {
@@ -63,7 +63,8 @@ struct Row: Codable {
         for i in 1...fullRowPattern.count {
             rowElements.append(RowElement(number: "\(i)", abbreviation: fullRowPattern[i-1]))
         }
-        for (position, abbreviation) in rowExtras{
+        let sortedExtras = rowExtras.sorted {$0.key > $1.key}
+        for (position, abbreviation) in sortedExtras{
             let elementType = RowElementType(from: abbreviation)
             switch elementType{
             case .increase:
@@ -73,7 +74,7 @@ struct Row: Codable {
             case .marker:
                 rowElements[position] = RowElement(number: " ", abbreviation: "M")
             case .endOfNeedle:
-                rowElements[position] = RowElement(number: " ", abbreviation: "E")
+                rowElements.insert(RowElement(number: " ", abbreviation: "E"), at: position)
             default:
                 return rowElements //add some warning or error
             }
