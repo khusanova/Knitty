@@ -162,5 +162,5 @@ extension Row{
 }
 
 extension Pattern{
-    static let example = Pattern(name: "Example Pattern", rows: (0..<50).map { _ in Row(basePattern: ["k", "k", "p", "p"], n: 42) })
+    static let example = Pattern(baseRow: Row(basePattern: Row.ribbing2x2, n: 42), length: 47, name: "Example Pattern")
 }
