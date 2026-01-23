@@ -163,4 +163,5 @@ extension Row{
 
 extension Pattern{
     static let example = Pattern(baseRow: Row(basePattern: Row.ribbing2x2, n: 42), length: 47, name: "Example Pattern")
+    static let bananaSockTop = Pattern(baseRow: Row(basePattern: Row.ribbing2x2, n: 56, rowExtras: Dictionary(uniqueKeysWithValues: (1...4).map{ ($0*14, "end of needle")})), length: 56)
 }
