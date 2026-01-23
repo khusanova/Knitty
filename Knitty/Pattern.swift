@@ -106,6 +106,12 @@ struct Row: Codable {
         }
         return true
     }
+    
+    static func + (lhs: Row, rhs: Row) -> Row{
+        var result = lhs
+        result.append(rhs)
+        return result
+    }
 }
 
 struct Pattern: Identifiable, Codable {
