@@ -8,12 +8,13 @@
 import Foundation
 
 enum RowElementType {
-    case stitch, marker, increase, decrease
+    case stitch, marker, increase, decrease, endOfNeedle
     static let abbreviations = [
         "stitch": ["k", "p"],
         "increase": ["m1l", "m1r"],
         "decrease": ["k2tog"],
-        "marker": ["blue", "green"]
+        "marker": ["blue", "green"],
+        "end of needle": ["blue", "green"]
     ]
     
     init?(from abbreviation: String) {
@@ -25,6 +26,7 @@ enum RowElementType {
         case "increase": self = .increase
         case "decrease": self = .decrease
         case "marker": self = .marker
+        case "end of needle": self = .endOfNeedle
         default: return nil
         }
     }
@@ -70,6 +72,8 @@ struct Row: Codable {
                 rowElements[position] = RowElement(number: "-", abbreviation: abbreviation)
             case .marker:
                 rowElements[position] = RowElement(number: " ", abbreviation: "M")
+            case .endOfNeedle:
+                rowElements[position] = RowElement(number: " ", abbreviation: "E")
             default:
                 return rowElements //add some warning or error
             }
