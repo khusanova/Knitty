@@ -81,6 +81,13 @@ struct Row: Codable {
         return rowElements
     }
     
+    mutating func append(_ row: Row){
+        self.fullRowPattern += row.fullRowPattern
+        for (position, abbreviation) in row.rowExtras{
+            self.rowExtras[position+self.count] = abbreviation
+        }
+    }
+    
     static func generateFullRowPattern(basePattern: [String], n: Int) -> [String] {
         var result: [String] = []
         let length = basePattern.count
