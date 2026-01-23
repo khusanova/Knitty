@@ -109,13 +109,20 @@ struct Row: Codable {
 
 struct Pattern: Identifiable, Codable {
     var id = UUID()
-    var name: String
     var rows: [Row]
+    var name: String?
+    var details: String?
+    var patternURL: URL?
     var count: Int {
         rows.count
     }
-    var details: String = ""
-    var patternURL: URL?
+    
+    init(baseRow: Row, length: Int, name: String? = nil, details: String? = nil, patternURL: URL? = nil){
+        self.rows = (0..<length).map {_ in baseRow}
+        self.name = name
+        self.details = details
+        self.patternURL = patternURL
+    }
     
     func displayRow(at index: Int) -> [RowElement]{
         rows[index].displayRow()
