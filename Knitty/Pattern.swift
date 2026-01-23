@@ -136,8 +136,13 @@ struct Pattern: Identifiable, Codable {
     }
 }
 
+extension Row{
+    static let ribbing1x1 = ["k", "p"]
+    static let ribbing2x2 = ["k", "k", "p", "p"]
+    static let knit = ["k"]
+    static let purl = ["p"]
+}
+
 extension Pattern{
     static let example = Pattern(name: "Example Pattern", rows: (0..<50).map { _ in Row(basePattern: ["k", "k", "p", "p"], n: 42) })
-    
-    
 }
