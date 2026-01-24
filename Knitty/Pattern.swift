@@ -181,11 +181,12 @@ extension Row{
 
 extension Pattern{
     static let example = Pattern(baseRow: Row(basePattern: Row.ribbing2x2, n: 42), length: 47, name: "Example Pattern")
-    static let bananaSockTop = Pattern(baseRow: Row(basePattern: Row.ribbing2x2, n: 56, rowExtras: Dictionary(uniqueKeysWithValues: (1...4).map{ ($0*14, "end of needle")})), length: 56)
+    static let bananaSockTop = Pattern(baseRow: Row(basePattern: Row.ribbing2x2, n: 56, rowExtras: Dictionary(uniqueKeysWithValues: (1...4).map{ ($0*14, "end of needle")})), length: 15)
     static let bananaSockKnitRow = Row(basePattern: Row.ribbing2x2, n: 14, rowExtras: [14: "end of needle"]) +
-    Row(basePattern: Row.knit, n: 26, rowExtras: [28: "end of needle", 40: "end of needle"]) +
-    Row(basePattern: Row.ribbing2x2, n: 16, rowExtras: [56: "end of needle"])
+        Row(basePattern: Row.knit, n: 26, rowExtras: [14: "end of needle", 26: "end of needle"]) +
+        Row(basePattern: Row.ribbing2x2, n: 16, rowExtras: [16: "end of needle"])
     static let bananaSockPurlRow = Row(basePattern: Row.ribbing2x2, n: 14, rowExtras: [14: "end of needle"]) +
-    Row(basePattern: Row.knit, n: 26, rowExtras: [28: "end of needle", 40: "end of needle"]) +
-    Row(basePattern: Row.ribbing2x2, n: 16, rowExtras: [56: "end of needle"])
+        Row(basePattern: Row.purl, n: 26, rowExtras: [14: "end of needle", 26: "end of needle"]) +
+        Row(basePattern: Row.ribbing2x2, n: 16, rowExtras: [16: "end of needle"])
+    static let bananaSockBody = (0..<10).map{ _ in Pattern(baseRow: Pattern.bananaSockKnitRow, length: 5) + Pattern(baseRow: Pattern.bananaSockPurlRow, length: 5)}.reduce(bananaSockTop,+)
 }
