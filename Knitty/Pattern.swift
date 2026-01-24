@@ -12,8 +12,8 @@ enum RowElementType {
     static let abbreviations = [
         "stitch": ["k", "p"],
         "increase": ["m1l", "m1r"],
-        "decrease": ["k2tog"],
-        "marker": ["blue", "green"],
+        "decrease": ["k2tog", "skp"],
+        "marker": ["blue", "green", "yellow", "magenta", "red", "orange"],
         "end of needle": ["end of needle"]
     ]
     
