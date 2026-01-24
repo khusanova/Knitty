@@ -188,7 +188,7 @@ extension Row{
 
 extension Pattern{
     static let example = Pattern(baseRow: Row(basePattern: Row.ribbing2x2, n: 42), length: 47, name: "Example Pattern")
-    static let bananaSockTop = Pattern(baseRow: Row(basePattern: Row.ribbing2x2, n: 56, rowExtras: Dictionary(uniqueKeysWithValues: (1...4).map{ ($0*14, "end of needle")})), length: 15)
+    static let bananaSockTop = Pattern(baseRow: Row(basePattern: Row.ribbing2x2, n: 56, rowExtras: Dictionary(uniqueKeysWithValues: (1...4).map{ ($0*14, "end of needle")})), length: 15, name: "Banana Sock", patternURL: URL(filePath: "https://www.kotona.com/articles/banana-socks"))
     static let bananaSockKnitRow = Row(basePattern: Row.ribbing2x2, n: 14, rowExtras: [14: "end of needle"]) +
         Row(basePattern: Row.knit, n: 26, rowExtras: [14: "end of needle", 26: "end of needle"]) +
         Row(basePattern: Row.ribbing2x2, n: 16, rowExtras: [16: "end of needle"])
@@ -196,4 +196,9 @@ extension Pattern{
         Row(basePattern: Row.purl, n: 26, rowExtras: [14: "end of needle", 26: "end of needle"]) +
         Row(basePattern: Row.ribbing2x2, n: 16, rowExtras: [16: "end of needle"])
     static let bananaSockBody = (0..<10).map{ _ in Pattern(baseRow: Pattern.bananaSockKnitRow, length: 5) + Pattern(baseRow: Pattern.bananaSockPurlRow, length: 5)}.reduce(bananaSockTop,+)
+    static let rowDecreases = (7...14).reversed().map {Row(basePattern: Row.knit, n: $0, rowExtras: [$0-3: "k2tog"]) +
+        Row(basePattern: Row.knit, n: $0, rowExtras: [2: "skp"]) +
+        Row(basePattern: Row.knit, n: $0, rowExtras: [$0-3: "k2tog"]) +
+        Row(basePattern: Row.knit, n: $0, rowExtras: [2: "skp"])}
+    static let bananaSock = Pattern.bananaSockBody + Pattern(rows: rowDecreases)
 }
