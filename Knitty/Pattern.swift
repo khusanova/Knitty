@@ -125,6 +125,13 @@ struct Pattern: Identifiable, Codable {
         rows.count
     }
     
+    init(rows: [Row], name: String? = nil, details: String? = nil, patternURL: URL? = nil){
+        self.rows = rows
+        self.name = name
+        self.details = details
+        self.patternURL = patternURL
+    }
+    
     init(baseRow: Row, length: Int, name: String? = nil, details: String? = nil, patternURL: URL? = nil){
         self.rows = (0..<length).map {_ in baseRow}
         self.name = name
