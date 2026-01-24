@@ -8,12 +8,13 @@
 import Foundation
 
 enum RowElementType {
-    case stitch, marker, increase, decrease
+    case stitch, marker, increase, decrease, endOfNeedle
     static let abbreviations = [
         "stitch": ["k", "p"],
         "increase": ["m1l", "m1r"],
-        "decrease": ["k2tog"],
-        "marker": ["blue", "green"]
+        "decrease": ["k2tog", "skp"],
+        "marker": ["blue", "green", "yellow", "magenta", "red", "orange"],
+        "end of needle": ["end of needle"]
     ]
     
     init?(from abbreviation: String) {
@@ -25,6 +26,7 @@ enum RowElementType {
         case "increase": self = .increase
         case "decrease": self = .decrease
         case "marker": self = .marker
+        case "end of needle": self = .endOfNeedle
         default: return nil
         }
     }
@@ -61,7 +63,8 @@ struct Row: Codable {
         for i in 1...fullRowPattern.count {
             rowElements.append(RowElement(number: "\(i)", abbreviation: fullRowPattern[i-1]))
         }
-        for (position, abbreviation) in rowExtras{
+        let sortedExtras = rowExtras.sorted {$0.key > $1.key}
+        for (position, abbreviation) in sortedExtras{
             let elementType = RowElementType(from: abbreviation)
             switch elementType{
             case .increase:
@@ -70,11 +73,21 @@ struct Row: Codable {
                 rowElements[position] = RowElement(number: "-", abbreviation: abbreviation)
             case .marker:
                 rowElements[position] = RowElement(number: " ", abbreviation: "M")
+            case .endOfNeedle:
+                rowElements.insert(RowElement(number: " ", abbreviation: "E"), at: position)
             default:
                 return rowElements //add some warning or error
             }
         }
         return rowElements
+    }
+    
+    mutating func append(_ row: Row){
+        let initialStitchCount = self.count
+        self.fullRowPattern += row.fullRowPattern
+        for (position, abbreviation) in row.rowExtras{
+            self.rowExtras[position+initialStitchCount] = abbreviation
+        }
     }
     
     static func generateFullRowPattern(basePattern: [String], n: Int) -> [String] {
@@ -94,14 +107,36 @@ struct Row: Codable {
         }
         return true
     }
+    
+    static func + (lhs: Row, rhs: Row) -> Row{
+        var result = lhs
+        result.append(rhs)
+        return result
+    }
 }
 
 struct Pattern: Identifiable, Codable {
     var id = UUID()
-    var name: String
     var rows: [Row]
+    var name: String?
+    var details: String?
+    var patternURL: URL?
     var count: Int {
         rows.count
+    }
+    
+    init(rows: [Row], name: String? = nil, details: String? = nil, patternURL: URL? = nil){
+        self.rows = rows
+        self.name = name
+        self.details = details
+        self.patternURL = patternURL
+    }
+    
+    init(baseRow: Row, length: Int, name: String? = nil, details: String? = nil, patternURL: URL? = nil){
+        self.rows = (0..<length).map {_ in baseRow}
+        self.name = name
+        self.details = details
+        self.patternURL = patternURL
     }
     
     func displayRow(at index: Int) -> [RowElement]{
@@ -132,10 +167,38 @@ struct Pattern: Identifiable, Codable {
         }
         rows[index].fullRowPattern = newPattern
     }
+    
+    mutating func append(_ pattern: Pattern){
+        self.rows += pattern.rows
+    }
+    
+    static func + (lhs: Pattern, rhs: Pattern) -> Pattern{
+        var result = lhs
+        result.append(rhs)
+        return result
+    }
+}
+
+extension Row{
+    static let ribbing1x1 = ["k", "p"]
+    static let ribbing2x2 = ["k", "k", "p", "p"]
+    static let knit = ["k"]
+    static let purl = ["p"]
 }
 
 extension Pattern{
-    static let example = Pattern(name: "Example Pattern", rows: (0..<50).map { _ in Row(basePattern: ["k", "k", "p", "p"], n: 42) })
-    
-    
+    static let example = Pattern(baseRow: Row(basePattern: Row.ribbing2x2, n: 42), length: 47, name: "Example Pattern")
+    static let bananaSockTop = Pattern(baseRow: Row(basePattern: Row.ribbing2x2, n: 56, rowExtras: Dictionary(uniqueKeysWithValues: (1...4).map{ ($0*14, "end of needle")})), length: 15, name: "Banana Sock", patternURL: URL(filePath: "https://www.kotona.com/articles/banana-socks"))
+    static let bananaSockKnitRow = Row(basePattern: Row.ribbing2x2, n: 14, rowExtras: [14: "end of needle"]) +
+        Row(basePattern: Row.knit, n: 26, rowExtras: [14: "end of needle", 26: "end of needle"]) +
+        Row(basePattern: Row.ribbing2x2, n: 16, rowExtras: [16: "end of needle"])
+    static let bananaSockPurlRow = Row(basePattern: Row.ribbing2x2, n: 14, rowExtras: [14: "end of needle"]) +
+        Row(basePattern: Row.purl, n: 26, rowExtras: [14: "end of needle", 26: "end of needle"]) +
+        Row(basePattern: Row.ribbing2x2, n: 16, rowExtras: [16: "end of needle"])
+    static let bananaSockBody = (0..<10).map{ _ in Pattern(baseRow: Pattern.bananaSockKnitRow, length: 5) + Pattern(baseRow: Pattern.bananaSockPurlRow, length: 5)}.reduce(bananaSockTop,+)
+    static let rowDecreases = (7...14).reversed().map {Row(basePattern: Row.knit, n: $0, rowExtras: [$0-3: "k2tog"]) +
+        Row(basePattern: Row.knit, n: $0, rowExtras: [2: "skp"]) +
+        Row(basePattern: Row.knit, n: $0, rowExtras: [$0-3: "k2tog"]) +
+        Row(basePattern: Row.knit, n: $0, rowExtras: [2: "skp"])}
+    static let bananaSock = Pattern.bananaSockBody + Pattern(rows: rowDecreases)
 }

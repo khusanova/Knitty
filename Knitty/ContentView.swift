@@ -9,7 +9,7 @@ import SwiftUI
 
 struct ContentView: View {
     @State private var rowNumber = 0
-    @State private var currentPattern = Pattern.example
+    @State private var currentPattern = Pattern.bananaSock
     var currentRow: [RowElement] { currentPattern.displayRow(at: rowNumber)}
     var body: some View {
         VStack {
