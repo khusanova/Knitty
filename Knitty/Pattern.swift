@@ -83,9 +83,10 @@ struct Row: Codable {
     }
     
     mutating func append(_ row: Row){
+        let initialStitchCount = self.count
         self.fullRowPattern += row.fullRowPattern
         for (position, abbreviation) in row.rowExtras{
-            self.rowExtras[position+self.count] = abbreviation
+            self.rowExtras[position+initialStitchCount] = abbreviation
         }
     }
     
