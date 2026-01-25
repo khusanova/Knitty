@@ -8,9 +8,10 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State private var rowNumber = 110
+    @State private var rowNumber = 119
     @State private var currentPattern = Pattern.bananaSock
     var currentRow: [RowElement] { currentPattern.displayRow(at: rowNumber)}
+    var rowElementsNumber: Int { currentRow.count }
     var body: some View {
         if rowNumber < currentPattern.count{
             VStack {
@@ -21,11 +22,11 @@ struct ContentView: View {
                 }
                 ScrollView(.horizontal) {
                       HStack {
-                          ForEach(0..<10){ i in
+                          ForEach(currentRow){ element in
                               VStack{
-                                  Text("\(currentRow[i].number)")
+                                  Text("\(element.number)")
                                   
-                                  Text("\(currentRow[i].abbreviation)")
+                                  Text("\(element.abbreviation)")
                               }
                           }
                       }
