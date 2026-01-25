@@ -40,28 +40,20 @@ struct RowElement: Identifiable, Codable {
 
 struct Row: Identifiable, Codable {
     var id = UUID()
-    var fullRowPattern: [String]
-    var rowExtras: [Int: String]
+    var elements: [RowElement]
+    var completed: Bool = false
     var count: Int {
-        return fullRowPattern.count
+        return elements.count
     }
     
     init(fullRowPattern: [String], rowExtras: [Int: String] = [:]) {
         if Self.checkExtrasIndexes(rowExtras, count: fullRowPattern.count) {
-            self.rowExtras = rowExtras
+            let rowExtras = rowExtras
         } else {
-            self.rowExtras = rowExtras.filter { $0.key <= fullRowPattern.count }
+            let rowExtras = rowExtras.filter { $0.key <= fullRowPattern.count }
         }
-        self.fullRowPattern = fullRowPattern
-    }
-    
-    init(basePattern: [String], n numberOfStitches: Int, rowExtras: [Int: String] = [:]) {
-        self.fullRowPattern = Self.generateFullRowPattern(basePattern: basePattern, n: numberOfStitches)
-        self.rowExtras = rowExtras
-    }
-    
-    func displayRow() -> [RowElement] {
         var rowElements: [RowElement] = []
+        
         for i in 1...fullRowPattern.count {
             rowElements.append(RowElement(number: "\(i)", abbreviation: fullRowPattern[i-1]))
         }
@@ -78,18 +70,15 @@ struct Row: Identifiable, Codable {
             case .endOfNeedle:
                 rowElements.insert(RowElement(number: " ", abbreviation: "E"), at: position)
             default:
-                return rowElements //add some warning or error
+                self.elements = rowElements //add some warning or error
             }
         }
-        return rowElements
+        self.elements = rowElements
     }
-    
+        
     mutating func append(_ row: Row){
         let initialStitchCount = self.count
-        self.fullRowPattern += row.fullRowPattern
-        for (position, abbreviation) in row.rowExtras{
-            self.rowExtras[position+initialStitchCount] = abbreviation
-        }
+        self.elements += row.elements
     }
     
     static func generateFullRowPattern(basePattern: [String], n: Int) -> [String] {
