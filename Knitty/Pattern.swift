@@ -47,37 +47,37 @@ struct Row: Identifiable, Codable {
     }
     
     init(fullRowPattern: [String], rowExtras: [Int: String] = [:]) {
-        if Self.checkExtrasIndexes(rowExtras, count: fullRowPattern.count) {
-            let rowExtras = rowExtras
-        } else {
-            let rowExtras = rowExtras.filter { $0.key <= fullRowPattern.count }
-        }
         var rowElements: [RowElement] = []
         
         for i in 1...fullRowPattern.count {
             rowElements.append(RowElement(number: "\(i)", abbreviation: fullRowPattern[i-1]))
         }
-        let sortedExtras = rowExtras.sorted {$0.key > $1.key}
-        for (position, abbreviation) in sortedExtras{
-            let elementType = RowElementType(from: abbreviation)
-            switch elementType{
-            case .increase:
-                rowElements.insert(RowElement(number: "\(position)+", abbreviation: abbreviation), at: position)
-            case .decrease:
-                rowElements[position] = RowElement(number: "-", abbreviation: abbreviation)
-            case .marker:
-                rowElements[position] = RowElement(number: " ", abbreviation: "M")
-            case .endOfNeedle:
-                rowElements.insert(RowElement(number: " ", abbreviation: "E"), at: position)
-            default:
-                self.elements = rowElements //add some warning or error
+        
+        if Self.checkExtrasIndexes(rowExtras, count: fullRowPattern.count) {
+            let sortedExtras = rowExtras.sorted {$0.key > $1.key}
+            for (position, abbreviation) in sortedExtras{
+                let elementType = RowElementType(from: abbreviation)
+                switch elementType{
+                case .increase:
+                    rowElements.insert(RowElement(number: "\(position)+", abbreviation: abbreviation), at: position)
+                case .decrease:
+                    rowElements[position] = RowElement(number: "-", abbreviation: abbreviation)
+                case .marker:
+                    rowElements[position] = RowElement(number: " ", abbreviation: "M")
+                case .endOfNeedle:
+                    rowElements.insert(RowElement(number: " ", abbreviation: "E"), at: position)
+                default:
+                    self.elements = rowElements //add some warning or error
+                }
             }
+        } else {
+            self.elements = rowElements
         }
+        
         self.elements = rowElements
     }
         
     mutating func append(_ row: Row){
-        let initialStitchCount = self.count
         self.elements += row.elements
     }
     
