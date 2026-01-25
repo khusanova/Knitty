@@ -131,7 +131,7 @@ struct Pattern: Identifiable, Codable {
     }
     
     func displayRow(at index: Int) -> [RowElement]{
-        rows[index].displayRow()
+        rows[index].elements
     }
     
     mutating func updateRow(at index: Int, newRow: Row) {
@@ -143,20 +143,6 @@ struct Pattern: Identifiable, Codable {
     
     mutating func addRow(newRow: Row) {
         rows.append(newRow)
-    }
-    
-    mutating func updateRowExtras(at index: Int, newExtras: [Int: String]) {
-        guard Row.checkExtrasIndexes(newExtras, count: rows[index].count) else {
-            return
-        }
-        rows[index].rowExtras = newExtras
-    }
-    
-    mutating func updateFullRowPattern(at index: Int, newPattern: [String]) {
-        guard newPattern.count == rows[index].count else {
-            return
-        }
-        rows[index].fullRowPattern = newPattern
     }
     
     mutating func append(_ pattern: Pattern){
