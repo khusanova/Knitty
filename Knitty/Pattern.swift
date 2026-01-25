@@ -32,12 +32,14 @@ enum RowElementType {
     }
 }
 
-struct RowElement {
+struct RowElement: Identifiable, Codable {
+    var id = UUID()
     var number: String
     var abbreviation: String
 }
 
-struct Row: Codable {
+struct Row: Identifiable, Codable {
+    var id = UUID()
     var fullRowPattern: [String]
     var rowExtras: [Int: String]
     var count: Int {
