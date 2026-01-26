@@ -38,7 +38,15 @@ struct RowElement: Identifiable, Codable {
     var abbreviation: String
 }
 
-struct Row: Identifiable, Codable {
+struct LiteRow: Identifiable, Codable {
+    var id = UUID()
+    var instructions: String
+    var completed: Bool = false
+}
+
+typealias Row = LiteRow
+
+struct ParsedRow: Identifiable, Codable {
     var id = UUID()
     var elements: [RowElement]
     var completed: Bool = false
@@ -77,7 +85,7 @@ struct Row: Identifiable, Codable {
         self.elements = rowElements
     }
         
-    mutating func append(_ row: Row){
+    mutating func append(_ row: ParsedRow){
         self.elements += row.elements
     }
     
@@ -99,7 +107,7 @@ struct Row: Identifiable, Codable {
         return true
     }
     
-    static func + (lhs: Row, rhs: Row) -> Row{
+    static func + (lhs: ParsedRow, rhs: ParsedRow) -> ParsedRow{
         var result = lhs
         result.append(rhs)
         return result
@@ -130,14 +138,11 @@ struct Pattern: Identifiable, Codable {
         self.patternURL = patternURL
     }
     
-    func displayRow(at index: Int) -> [RowElement]{
-        rows[index].elements
+    func displayRowInstructions(at index: Int) -> String{
+        rows[index].instructions
     }
     
     mutating func updateRow(at index: Int, newRow: Row) {
-        guard newRow.count == rows[index].count else {
-            return
-        }
         rows[index] = newRow
     }
     
@@ -156,6 +161,7 @@ struct Pattern: Identifiable, Codable {
     }
 }
 
+/*
 extension Row{
     static let ribbing1x1 = ["k", "p"]
     static let ribbing2x2 = ["k", "k", "p", "p"]
@@ -179,3 +185,4 @@ extension Pattern{
         Row(stitches: Row.generateStitches(basePattern: Row.knit, n: $0), rowExtras: [2: "skp"])}
     static let bananaSock = Pattern.bananaSockBody + Pattern(rows: rowDecreases)
 }
+*/
