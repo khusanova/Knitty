@@ -7,27 +7,24 @@
 
 import Foundation
 
-extension Row{
-    static let ribbing1x1 = ["k", "p"]
-    static let ribbing2x2 = ["k", "k", "p", "p"]
-    static let knit = ["k"]
-    static let purl = ["p"]
-}
-
 extension Pattern{
-    static let example = Pattern(baseRow: Row(stitches: Row.generateStitches(basePattern: Row.ribbing2x2, n: 42)), length: 47, name: "Example Pattern")
-    static let bananaSockTop = Pattern(baseRow: Row(stitches: Row.generateStitches(basePattern: Row.ribbing2x2, n: 56), rowExtras: Dictionary(uniqueKeysWithValues: (1...4).map{ ($0*14, "end of needle")})), length: 15, name: "Banana Sock", patternURL: URL(filePath: "https://www.kotona.com/articles/banana-socks"))
-    static let bananaSockKnitRow = Row(stitches: Row.generateStitches(basePattern: Row.ribbing2x2, n: 14), rowExtras: [14: "end of needle"]) +
-    Row(stitches: Row.generateStitches(basePattern: Row.knit, n: 26), rowExtras: [14: "end of needle", 26: "end of needle"]) +
-    Row(stitches: Row.generateStitches(basePattern: Row.ribbing2x2, n: 16), rowExtras: [16: "end of needle"])
-    static let bananaSockPurlRow = Row(stitches: Row.generateStitches(basePattern: Row.ribbing2x2, n: 14), rowExtras: [14: "end of needle"]) +
-    Row(stitches: Row.generateStitches(basePattern: Row.purl, n: 26), rowExtras: [14: "end of needle", 26: "end of needle"]) +
-    Row(stitches: Row.generateStitches(basePattern: Row.ribbing2x2, n: 16), rowExtras: [16: "end of needle"])
-    static let bananaSockBody = (0..<10).map{ _ in Pattern(baseRow: Pattern.bananaSockKnitRow, length: 5) + Pattern(baseRow: Pattern.bananaSockPurlRow, length: 5)}.reduce(bananaSockTop,+)
-    static let rowDecreases = (7...14).reversed().map {Row(stitches: Row.generateStitches(basePattern: Row.knit, n: $0), rowExtras: [$0-3: "k2tog"]) +
-        Row(stitches: Row.generateStitches(basePattern: Row.knit, n: $0), rowExtras: [2: "skp"]) +
-        Row(stitches: Row.generateStitches(basePattern: Row.knit, n: $0), rowExtras: [$0-3: "k2tog"]) +
-        Row(stitches: Row.generateStitches(basePattern: Row.knit, n: $0), rowExtras: [2: "skp"])}
-    static let bananaSock = Pattern.bananaSockBody + Pattern(rows: rowDecreases)
+    static var bananaSockTop = Pattern(baseRow: Row(instructions: "k2p2 x 14"), length: 15, patternURL: URL(filePath: "https://www.kotona.com/articles/banana-socks"))
+    
+    static var bananaSockRight = (0..<10).map{ _ in Pattern(baseRow: Row(instructions: "k2p2 x 7, p2, k26"), length: 5) + Pattern(baseRow: Row(instructions: "k2p2 x 7, p2, p26"), length: 5)}.reduce(bananaSockTop,+)
+    + Pattern(baseRow: Row(instructions: "k56"), length: 2)
+    + Pattern(rows: [Row(instructions: "k1 PM k22 k2tog k1 k2tog k1 PM k1 skp k1 skp k21"), Row(instructions: "k1 M k1 skp k20 k2tog k1 M k1 skp k20 k2tog"),
+                     Row(instructions: "k1 M k18 k2tog k1 k2tog k1 M k1 skp k1 skp k17"), Row(instructions: "k1 M k1 skp k16 k2tog k1 M k1 skp k16 k2tog"),
+                     Row(instructions: "k1 M k14 k2tog k1 k2tog k1 M k1 skp k1 skp k13"), Row(instructions: "k1 M k1 skp k12 k2tog k1 M k1 skp k12 k2tog"),
+                     Row(instructions: "k1 M k10 k2tog k1 k2tog k1 M k1 skp k1 skp k9"), Row(instructions: "k1 M k1 skp k8 k2tog k1 M k1 skp k8 k2tog"),
+                     Row(instructions: "k1 M k6 k2tog k1 k2tog k1 M k1 skp k1 skp k5")])
+    
+    static var bananaSockLeft = (0..<10).map{ _ in Pattern(baseRow: Row(instructions: "k26, k2p2 x 7, p2"), length: 5) + Pattern(baseRow: Row(instructions: "p26, k2p2 x 7, p2"), length: 5)}.reduce(bananaSockTop,+)
+    + Pattern(baseRow: Row(instructions: "k56"), length: 2)
+    + Pattern(rows: [Row(instructions: "k22 k2tog k1 k2tog k1 PM k1 skp k1 skp k21 M k1"), Row(instructions: "k1 skp k20 k2tog k1 M k1 skp k20 k2tog M K1"),
+                     Row(instructions: "k18 k2tog k1 k2tog k1 M k1 skp k1 skp k17 M k1"), Row(instructions: "k1 skp k16 k2tog k1 M k1 skp k16 k2tog M k1"),
+                     Row(instructions: "k14 k2tog k1 k2tog k1 M k1 skp k1 skp k13 M k1"), Row(instructions: "k1 skp k12 k2tog k1 M k1 skp k12 k2tog M k1"),
+                     Row(instructions: "k10 k2tog k1 k2tog k1 M k1 skp k1 skp k9 M k1"), Row(instructions: "k1 skp k8 k2tog k1 M k1 skp k8 k2tog M k1"),
+                     Row(instructions: "k6 k2tog k1 k2tog k1 M k1 skp k1 skp k5 M k1")])
+    
+    
 }
-
