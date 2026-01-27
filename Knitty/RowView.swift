@@ -11,17 +11,8 @@ struct RowView: View {
     let row: Row
     var body: some View{
         ScrollView(.horizontal) {
-              HStack {
-                  ForEach(row.elements){ element in
-                      VStack{
-                          Text("\(element.number)")
-                          
-                          Text("\(element.abbreviation)")
-                      }
-                  }
-              }
+            Text("\(row.instructions)")
           }
-        .background(Color.mint)
     }
 }
 

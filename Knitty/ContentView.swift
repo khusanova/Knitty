@@ -11,7 +11,7 @@ import SwiftUI
 
 struct ContentView: View {
     @State private var rowNumber = 119
-    @State private var currentPattern = Pattern.bananaSock
+    @State private var currentPattern = Pattern.bananaSockLeft
     var currentRow: Row { currentPattern.rows[ rowNumber]}
     var body: some View {
         if rowNumber < currentPattern.count{
