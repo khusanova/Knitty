@@ -10,14 +10,14 @@ import SwiftUI
 
 
 struct ContentView: View {
-    @State private var rowNumber = 119
+    @AppStorage("rowNumber") var rowNumber = 0
     @State private var currentPattern = Pattern.bananaSockLeft
-    var currentRow: Row { currentPattern.rows[ rowNumber]}
+    var currentRow: Row { currentPattern.rows[rowNumber]}
     var body: some View {
         if rowNumber < currentPattern.count{
             VStack {
                 Text("🧶 Knit!!!").font(.largeTitle)
-                Text("You are at the row \(rowNumber)")
+                Text("You are at the row \(rowNumber+1)")
                 HStack{
                     Text("Follow this pattern: \(currentPattern.count)")
                 }
@@ -26,10 +26,15 @@ struct ContentView: View {
                 HStack {
                       Button("-1") {
                           rowNumber -= 1
+                          if rowNumber < 0{
+                              rowNumber = 0
+                          }
+                          UserDefaults.standard.set(rowNumber, forKey: "rowNumber")
                       }
                                                             
                       Button("+1") {
                           rowNumber += 1
+                          UserDefaults.standard.set(rowNumber, forKey: "rowNumber")
                       }
                   }
             }
