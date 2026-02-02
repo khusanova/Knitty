@@ -118,40 +118,37 @@ struct Pattern: Identifiable, Codable {
     var rows: [Row]
     var name: String?
     var details: String?
-    var patternURL: URL?
     var count: Int {
         rows.count
     }
     
-    init(rows: [Row], name: String? = nil, details: String? = nil, patternURL: URL? = nil){
+    init(rows: [Row], name: String? = nil, details: String? = nil){
         self.rows = rows
         self.name = name
         self.details = details
-        self.patternURL = patternURL
     }
     
-    init(baseRow: Row, length: Int, name: String? = nil, details: String? = nil, patternURL: URL? = nil){
+    init(baseRow: Row, length: Int, name: String? = nil, details: String? = nil){
         self.rows = (0..<length).map {_ in baseRow}
         self.name = name
         self.details = details
-        self.patternURL = patternURL
     }
     
     mutating func updateRow(at index: Int, newRow: Row) {
         rows[index] = newRow
     }
     
-    mutating func addRow(newRow: Row) {
+    mutating func appendRow(newRow: Row) {
         rows.append(newRow)
     }
     
-    mutating func append(_ pattern: Pattern){
+    mutating func appendPattern(_ pattern: Pattern){
         self.rows += pattern.rows
     }
     
     static func + (lhs: Pattern, rhs: Pattern) -> Pattern{
         var result = lhs
-        result.append(rhs)
+        result.appendPattern(rhs)
         return result
     }
 }
