@@ -41,7 +41,6 @@ struct RowElement: Identifiable, Codable {
 struct LiteRow: Identifiable, Codable {
     var id = UUID()
     var instructions: String
-    var completed: Bool = false
 }
 
 typealias Row = LiteRow
