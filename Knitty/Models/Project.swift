@@ -15,6 +15,12 @@ struct ProjectPart: Codable, Identifiable{
     var totalRowCounter: Int {
         patternRowCounters.reduce(0, +)
     }
+    
+    init(name: String, patternOrder: [UUID], ProjectPartURL: URL? = nil){
+        self.name = name
+        self.patternOrder = patternOrder
+        self.patternRowCounters = (0..<patternOrder.count).map {_ in 0}
+    }
 }
 
 struct Project: Codable, Identifiable{
