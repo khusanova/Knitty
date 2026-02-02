@@ -30,6 +30,7 @@ struct Project: Codable, Identifiable{
     var patterns: [UUID: Pattern]
     var currentProjectPart: UUID?
     var description: String?
+    var projectURL: URL?
     
     func totalRowCount(projectPart: ProjectPart) -> Int {
         projectPart.patternOrder.compactMap { patterns[$0]?.count ?? 0}.reduce(0,+)
