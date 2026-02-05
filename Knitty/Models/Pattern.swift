@@ -50,7 +50,7 @@ struct ParsedRow: Identifiable, Codable {
     var elements: [RowElement]
     var completed: Bool = false
     var count: Int {
-        return elements.count
+        elements.count
     }
     
     init(stitches: [String], rowExtras: [Int: String] = [:]) {
@@ -62,9 +62,9 @@ struct ParsedRow: Identifiable, Codable {
         
         if Self.checkExtrasIndexes(rowExtras, count: stitches.count) {
             let sortedExtras = rowExtras.sorted {$0.key > $1.key}
-            for (position, abbreviation) in sortedExtras{
+            for (position, abbreviation) in sortedExtras {
                 let elementType = RowElementType(from: abbreviation)
-                switch elementType{
+                switch elementType {
                 case .increase:
                     rowElements.insert(RowElement(number: "\(position)+", abbreviation: abbreviation), at: position)
                 case .decrease:
@@ -84,7 +84,7 @@ struct ParsedRow: Identifiable, Codable {
         self.elements = rowElements
     }
         
-    mutating func append(_ row: ParsedRow){
+    mutating func append(_ row: ParsedRow) {
         self.elements += row.elements
     }
     
@@ -100,13 +100,13 @@ struct ParsedRow: Identifiable, Codable {
     }
     
     static func checkExtrasIndexes(_ newExtras: [Int: String], count: Int) -> Bool {
-        guard newExtras.allSatisfy( {$0.key < count}) else {
+        guard newExtras.allSatisfy({ $0.key < count }) else {
             return false
         }
         return true
     }
     
-    static func + (lhs: ParsedRow, rhs: ParsedRow) -> ParsedRow{
+    static func + (lhs: ParsedRow, rhs: ParsedRow) -> ParsedRow {
         var result = lhs
         result.append(rhs)
         return result
@@ -132,7 +132,7 @@ struct Pattern: Identifiable, Codable {
     
     init(baseRow: Row, length: Int, name: String? = nil, details: String? = nil) {
         self.rows = [baseRow.id: baseRow]
-        self.rowOrder = (0..<length).map {_ in baseRow.id}
+        self.rowOrder = (0..<length).map { _ in baseRow.id}
         self.name = name
         self.details = details
     }
@@ -147,12 +147,12 @@ struct Pattern: Identifiable, Codable {
         rowOrder.append(newRow.id)
     }
     
-    mutating func appendPattern(_ pattern: Pattern){
+    mutating func appendPattern(_ pattern: Pattern) {
         self.rows.merge(pattern.rows) { existing, _ in existing }
         self.rowOrder += pattern.rowOrder
     }
     
-    static func + (lhs: Pattern, rhs: Pattern) -> Pattern{
+    static func + (lhs: Pattern, rhs: Pattern) -> Pattern {
         var result = lhs
         result.appendPattern(rhs)
         return result
