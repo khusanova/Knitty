@@ -115,35 +115,41 @@ struct ParsedRow: Identifiable, Codable {
 
 struct Pattern: Identifiable, Codable {
     var id = UUID()
-    var rows: [Row]
+    var rows: [UUID: Row]
+    var rowOrder: [UUID]
     var name: String?
     var details: String?
     var count: Int {
-        rows.count
+        rowOrder.count
     }
     
-    init(rows: [Row], name: String? = nil, details: String? = nil){
+    init(rows: [UUID: Row], rowOrder: [UUID]? = nil, name: String? = nil, details: String? = nil) {
         self.rows = rows
         self.name = name
         self.details = details
+        self.rowOrder = rowOrder ?? rows.map { $0.key }
     }
     
-    init(baseRow: Row, length: Int, name: String? = nil, details: String? = nil){
-        self.rows = (0..<length).map {_ in baseRow}
+    init(baseRow: Row, length: Int, name: String? = nil, details: String? = nil) {
+        self.rows = [baseRow.id: baseRow]
+        self.rowOrder = (0..<length).map {_ in baseRow.id}
         self.name = name
         self.details = details
     }
     
     mutating func updateRow(at index: Int, newRow: Row) {
-        rows[index] = newRow
+        rows[newRow.id] = newRow
+        rowOrder[index] = newRow.id
     }
     
     mutating func appendRow(newRow: Row) {
-        rows.append(newRow)
+        rows[newRow.id] = newRow
+        rowOrder.append(newRow.id)
     }
     
     mutating func appendPattern(_ pattern: Pattern){
-        self.rows += pattern.rows
+        self.rows.merge(pattern.rows) { existing, _ in existing }
+        self.rowOrder += pattern.rowOrder
     }
     
     static func + (lhs: Pattern, rhs: Pattern) -> Pattern{
