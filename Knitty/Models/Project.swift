@@ -19,7 +19,7 @@ struct Project: Codable, Identifiable{
             patternRowCounters.reduce(0, +)
         }
         
-        init(name: String, patterns: [Pattern], ProjectPartURL: URL? = nil){
+        init(name: String, patterns: [Pattern]){
             self.name = name
             self.patternOrder = patterns.map { $0.id }
             self.patternRowCounters = (0..<patternOrder.count).map {_ in 0}
