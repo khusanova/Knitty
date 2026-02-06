@@ -123,13 +123,6 @@ struct Pattern: Identifiable, Codable {
         rowOrder.count
     }
     
-    init(rows: [UUID: Row], rowOrder: [UUID]? = nil, name: String? = nil, details: String? = nil) {
-        self.rows = rows
-        self.name = name
-        self.details = details
-        self.rowOrder = rowOrder ?? rows.map { $0.key }
-    }
-    
     init(rows: [Row], name: String? = nil, details: String? = nil) {
         self.rowOrder = rows.map { $0.id }
         self.rows = Dictionary(rows.map { ($0.id, $0) },
