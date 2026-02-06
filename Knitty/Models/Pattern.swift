@@ -130,6 +130,14 @@ struct Pattern: Identifiable, Codable {
         self.rowOrder = rowOrder ?? rows.map { $0.key }
     }
     
+    init(rows: [Row], name: String? = nil, details: String? = nil) {
+        self.rowOrder = rows.map { $0.id }
+        self.rows = Dictionary(rows.map { ($0.id, $0) },
+                               uniquingKeysWith: { old, _ in old})
+        self.name = name
+        self.details = details
+    }
+    
     init(baseRow: Row, length: Int, name: String? = nil, details: String? = nil) {
         self.rows = [baseRow.id: baseRow]
         self.rowOrder = (0..<length).map { _ in baseRow.id}
