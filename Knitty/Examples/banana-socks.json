@@ -1,0 +1,294 @@
+{
+  "id" : "4B7ED4BD-43F0-4F7A-9899-2EC54E93659D",
+  "name" : "Banana socks",
+  "projectParts" : [
+    {
+      "id" : "04B0DBFD-88D1-4D06-89F3-862EEE53FF8E",
+      "patternOrder" : [
+        "3E434624-C55E-40BF-B39E-FE5EC3196DB4",
+        "49CC35D3-3EFD-4A96-B5A6-DAEECBE9A947",
+        "49CC35D3-3EFD-4A96-B5A6-DAEECBE9A947",
+        "49CC35D3-3EFD-4A96-B5A6-DAEECBE9A947",
+        "49CC35D3-3EFD-4A96-B5A6-DAEECBE9A947",
+        "49CC35D3-3EFD-4A96-B5A6-DAEECBE9A947",
+        "49CC35D3-3EFD-4A96-B5A6-DAEECBE9A947",
+        "49CC35D3-3EFD-4A96-B5A6-DAEECBE9A947",
+        "49CC35D3-3EFD-4A96-B5A6-DAEECBE9A947",
+        "49CC35D3-3EFD-4A96-B5A6-DAEECBE9A947",
+        "49CC35D3-3EFD-4A96-B5A6-DAEECBE9A947",
+        "7A2D0AF3-8CA6-45B9-860F-F6A15F1F8850"
+      ],
+      "patternRowCounters" : [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "name" : "Right sock"
+    },
+    {
+      "name" : "Left sock",
+      "patternOrder" : [
+        "3E434624-C55E-40BF-B39E-FE5EC3196DB4",
+        "FED1166E-CF04-4B26-B4C7-CE543EF1F945",
+        "FED1166E-CF04-4B26-B4C7-CE543EF1F945",
+        "FED1166E-CF04-4B26-B4C7-CE543EF1F945",
+        "FED1166E-CF04-4B26-B4C7-CE543EF1F945",
+        "FED1166E-CF04-4B26-B4C7-CE543EF1F945",
+        "FED1166E-CF04-4B26-B4C7-CE543EF1F945",
+        "FED1166E-CF04-4B26-B4C7-CE543EF1F945",
+        "FED1166E-CF04-4B26-B4C7-CE543EF1F945",
+        "FED1166E-CF04-4B26-B4C7-CE543EF1F945",
+        "FED1166E-CF04-4B26-B4C7-CE543EF1F945",
+        "5AC68A00-E067-44E2-8BCC-E19DD1E78A6E"
+      ],
+      "id" : "614ADC90-C774-44B3-A3E1-E0DE0A5AE5E4",
+      "patternRowCounters" : [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    }
+  ],
+  "patterns" : [
+    "3E434624-C55E-40BF-B39E-FE5EC3196DB4",
+    {
+      "id" : "3E434624-C55E-40BF-B39E-FE5EC3196DB4",
+      "rowOrder" : [
+        "41BCAE50-99D8-4765-99A9-603FA2B19B3F",
+        "41BCAE50-99D8-4765-99A9-603FA2B19B3F",
+        "41BCAE50-99D8-4765-99A9-603FA2B19B3F",
+        "41BCAE50-99D8-4765-99A9-603FA2B19B3F",
+        "41BCAE50-99D8-4765-99A9-603FA2B19B3F",
+        "41BCAE50-99D8-4765-99A9-603FA2B19B3F",
+        "41BCAE50-99D8-4765-99A9-603FA2B19B3F",
+        "41BCAE50-99D8-4765-99A9-603FA2B19B3F",
+        "41BCAE50-99D8-4765-99A9-603FA2B19B3F",
+        "41BCAE50-99D8-4765-99A9-603FA2B19B3F",
+        "41BCAE50-99D8-4765-99A9-603FA2B19B3F",
+        "41BCAE50-99D8-4765-99A9-603FA2B19B3F",
+        "41BCAE50-99D8-4765-99A9-603FA2B19B3F",
+        "41BCAE50-99D8-4765-99A9-603FA2B19B3F",
+        "41BCAE50-99D8-4765-99A9-603FA2B19B3F"
+      ],
+      "rows" : [
+        "41BCAE50-99D8-4765-99A9-603FA2B19B3F",
+        {
+          "id" : "41BCAE50-99D8-4765-99A9-603FA2B19B3F",
+          "instructions" : "k2p2 x 14"
+        }
+      ]
+    },
+    "49CC35D3-3EFD-4A96-B5A6-DAEECBE9A947",
+    {
+      "id" : "49CC35D3-3EFD-4A96-B5A6-DAEECBE9A947",
+      "rowOrder" : [
+        "07C499FD-7BBD-4B14-9957-245EC531CF3D",
+        "07C499FD-7BBD-4B14-9957-245EC531CF3D",
+        "07C499FD-7BBD-4B14-9957-245EC531CF3D",
+        "07C499FD-7BBD-4B14-9957-245EC531CF3D",
+        "07C499FD-7BBD-4B14-9957-245EC531CF3D",
+        "0710EB21-EEFB-48A2-9F6D-97E16CA364B1",
+        "0710EB21-EEFB-48A2-9F6D-97E16CA364B1",
+        "0710EB21-EEFB-48A2-9F6D-97E16CA364B1",
+        "0710EB21-EEFB-48A2-9F6D-97E16CA364B1",
+        "0710EB21-EEFB-48A2-9F6D-97E16CA364B1"
+      ],
+      "rows" : [
+        "07C499FD-7BBD-4B14-9957-245EC531CF3D",
+        {
+          "instructions" : "k2p2 x 7, p2, k26",
+          "id" : "07C499FD-7BBD-4B14-9957-245EC531CF3D"
+        },
+        "0710EB21-EEFB-48A2-9F6D-97E16CA364B1",
+        {
+          "instructions" : "k2p2 x 7, p2, p26",
+          "id" : "0710EB21-EEFB-48A2-9F6D-97E16CA364B1"
+        }
+      ]
+    },
+    "FED1166E-CF04-4B26-B4C7-CE543EF1F945",
+    {
+      "id" : "FED1166E-CF04-4B26-B4C7-CE543EF1F945",
+      "rowOrder" : [
+        "C34D64B9-CFDF-4D41-A62A-1AB553BCF601",
+        "C34D64B9-CFDF-4D41-A62A-1AB553BCF601",
+        "C34D64B9-CFDF-4D41-A62A-1AB553BCF601",
+        "C34D64B9-CFDF-4D41-A62A-1AB553BCF601",
+        "C34D64B9-CFDF-4D41-A62A-1AB553BCF601",
+        "BF467C99-DD1E-4953-989A-0C3879082343",
+        "BF467C99-DD1E-4953-989A-0C3879082343",
+        "BF467C99-DD1E-4953-989A-0C3879082343",
+        "BF467C99-DD1E-4953-989A-0C3879082343",
+        "BF467C99-DD1E-4953-989A-0C3879082343"
+      ],
+      "rows" : [
+        "BF467C99-DD1E-4953-989A-0C3879082343",
+        {
+          "id" : "BF467C99-DD1E-4953-989A-0C3879082343",
+          "instructions" : "p26, k2p2 x 7, p2"
+        },
+        "C34D64B9-CFDF-4D41-A62A-1AB553BCF601",
+        {
+          "id" : "C34D64B9-CFDF-4D41-A62A-1AB553BCF601",
+          "instructions" : "k26, k2p2 x 7, p2"
+        }
+      ]
+    },
+    "5AC68A00-E067-44E2-8BCC-E19DD1E78A6E",
+    {
+      "id" : "5AC68A00-E067-44E2-8BCC-E19DD1E78A6E",
+      "rowOrder" : [
+        "0ADC7B29-04BC-4549-B030-8E6E8AE2E779",
+        "0ADC7B29-04BC-4549-B030-8E6E8AE2E779",
+        "D96A3892-205E-40B3-AB96-7BAABA8A0185",
+        "FA103D65-24E9-4636-8D19-173BCD0E9474",
+        "607896CC-B710-4FEA-9DF4-57BAF3511624",
+        "BB60D9E5-EFA3-4A4D-B1DB-60668498DC56",
+        "F90957C1-872D-4488-A7B2-AD2A44CB708E",
+        "C6E4AD3A-B06A-4F45-B0CD-C5A8B64DFEDE",
+        "BFA1DFF9-5AEB-4EA7-AE38-214D3E4366EB",
+        "A986CC90-386D-43A1-BF0A-F03DBBD9DC4C",
+        "7472E3FE-C3E4-441B-BA7C-8C0456896E5B"
+      ],
+      "rows" : [
+        "A986CC90-386D-43A1-BF0A-F03DBBD9DC4C",
+        {
+          "instructions" : "k1 skp k8 k2tog k1 M k1 skp k8 k2tog M k1",
+          "id" : "A986CC90-386D-43A1-BF0A-F03DBBD9DC4C"
+        },
+        "F90957C1-872D-4488-A7B2-AD2A44CB708E",
+        {
+          "instructions" : "k14 k2tog k1 k2tog k1 M k1 skp k1 skp k13 M k1",
+          "id" : "F90957C1-872D-4488-A7B2-AD2A44CB708E"
+        },
+        "C6E4AD3A-B06A-4F45-B0CD-C5A8B64DFEDE",
+        {
+          "instructions" : "k1 skp k12 k2tog k1 M k1 skp k12 k2tog M k1",
+          "id" : "C6E4AD3A-B06A-4F45-B0CD-C5A8B64DFEDE"
+        },
+        "D96A3892-205E-40B3-AB96-7BAABA8A0185",
+        {
+          "instructions" : "k22 k2tog k1 k2tog k1 PM k1 skp k1 skp k21 M k1",
+          "id" : "D96A3892-205E-40B3-AB96-7BAABA8A0185"
+        },
+        "BB60D9E5-EFA3-4A4D-B1DB-60668498DC56",
+        {
+          "instructions" : "k1 skp k16 k2tog k1 M k1 skp k16 k2tog M k1",
+          "id" : "BB60D9E5-EFA3-4A4D-B1DB-60668498DC56"
+        },
+        "0ADC7B29-04BC-4549-B030-8E6E8AE2E779",
+        {
+          "instructions" : "k56",
+          "id" : "0ADC7B29-04BC-4549-B030-8E6E8AE2E779"
+        },
+        "7472E3FE-C3E4-441B-BA7C-8C0456896E5B",
+        {
+          "instructions" : "k6 k2tog k1 k2tog k1 M k1 skp k1 skp k5 M k1",
+          "id" : "7472E3FE-C3E4-441B-BA7C-8C0456896E5B"
+        },
+        "FA103D65-24E9-4636-8D19-173BCD0E9474",
+        {
+          "instructions" : "k1 skp k20 k2tog k1 M k1 skp k20 k2tog M K1",
+          "id" : "FA103D65-24E9-4636-8D19-173BCD0E9474"
+        },
+        "607896CC-B710-4FEA-9DF4-57BAF3511624",
+        {
+          "instructions" : "k18 k2tog k1 k2tog k1 M k1 skp k1 skp k17 M k1",
+          "id" : "607896CC-B710-4FEA-9DF4-57BAF3511624"
+        },
+        "BFA1DFF9-5AEB-4EA7-AE38-214D3E4366EB",
+        {
+          "instructions" : "k10 k2tog k1 k2tog k1 M k1 skp k1 skp k9 M k1",
+          "id" : "BFA1DFF9-5AEB-4EA7-AE38-214D3E4366EB"
+        }
+      ]
+    },
+    "7A2D0AF3-8CA6-45B9-860F-F6A15F1F8850",
+    {
+      "id" : "7A2D0AF3-8CA6-45B9-860F-F6A15F1F8850",
+      "rowOrder" : [
+        "D1E32541-9C9A-4A7F-9D73-5F7E70FC656F",
+        "D1E32541-9C9A-4A7F-9D73-5F7E70FC656F",
+        "1E88370A-026F-41EB-BC7D-4BD8EF0D51C8",
+        "3511D841-B46E-4DE3-A090-F6940831290B",
+        "B8384280-4653-4615-B1A6-63576B394F7E",
+        "7E5F2D40-0766-4189-9C05-3D07FC41708C",
+        "9B924858-0FE6-46BC-B1AD-BC874F49C99E",
+        "61BF432D-42DD-41F7-92D7-8A3319095DE2",
+        "2AA934D9-9461-4338-ACB2-5BB5949D00EA",
+        "728423D9-0DE8-4F44-A658-43123E194A13",
+        "8905A2ED-1BF2-43A1-B01A-E21FC5905F13"
+      ],
+      "rows" : [
+        "8905A2ED-1BF2-43A1-B01A-E21FC5905F13",
+        {
+          "id" : "8905A2ED-1BF2-43A1-B01A-E21FC5905F13",
+          "instructions" : "k1 M k6 k2tog k1 k2tog k1 M k1 skp k1 skp k5"
+        },
+        "3511D841-B46E-4DE3-A090-F6940831290B",
+        {
+          "id" : "3511D841-B46E-4DE3-A090-F6940831290B",
+          "instructions" : "k1 M k1 skp k20 k2tog k1 M k1 skp k20 k2tog"
+        },
+        "7E5F2D40-0766-4189-9C05-3D07FC41708C",
+        {
+          "id" : "7E5F2D40-0766-4189-9C05-3D07FC41708C",
+          "instructions" : "k1 M k1 skp k16 k2tog k1 M k1 skp k16 k2tog"
+        },
+        "61BF432D-42DD-41F7-92D7-8A3319095DE2",
+        {
+          "id" : "61BF432D-42DD-41F7-92D7-8A3319095DE2",
+          "instructions" : "k1 M k1 skp k12 k2tog k1 M k1 skp k12 k2tog"
+        },
+        "D1E32541-9C9A-4A7F-9D73-5F7E70FC656F",
+        {
+          "id" : "D1E32541-9C9A-4A7F-9D73-5F7E70FC656F",
+          "instructions" : "k56"
+        },
+        "9B924858-0FE6-46BC-B1AD-BC874F49C99E",
+        {
+          "instructions" : "k1 M k14 k2tog k1 k2tog k1 M k1 skp k1 skp k13",
+          "id" : "9B924858-0FE6-46BC-B1AD-BC874F49C99E"
+        },
+        "1E88370A-026F-41EB-BC7D-4BD8EF0D51C8",
+        {
+          "instructions" : "k1 PM k22 k2tog k1 k2tog k1 PM k1 skp k1 skp k21",
+          "id" : "1E88370A-026F-41EB-BC7D-4BD8EF0D51C8"
+        },
+        "B8384280-4653-4615-B1A6-63576B394F7E",
+        {
+          "instructions" : "k1 M k18 k2tog k1 k2tog k1 M k1 skp k1 skp k17",
+          "id" : "B8384280-4653-4615-B1A6-63576B394F7E"
+        },
+        "728423D9-0DE8-4F44-A658-43123E194A13",
+        {
+          "instructions" : "k1 M k1 skp k8 k2tog k1 M k1 skp k8 k2tog",
+          "id" : "728423D9-0DE8-4F44-A658-43123E194A13"
+        },
+        "2AA934D9-9461-4338-ACB2-5BB5949D00EA",
+        {
+          "instructions" : "k1 M k10 k2tog k1 k2tog k1 M k1 skp k1 skp k9",
+          "id" : "2AA934D9-9461-4338-ACB2-5BB5949D00EA"
+        }
+      ]
+    }
+  ]
+}
