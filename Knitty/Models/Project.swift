@@ -48,4 +48,28 @@ struct Project: Codable, Identifiable{
     func totalRowCount(projectPart: ProjectPart) -> Int {
         projectPart.patternOrder.compactMap { patterns[$0]?.count ?? 0}.reduce(0,+)
     }
+    
+    func getRow(indexRow: Int, indexPart: Int) -> Row? {
+        let projectPart = projectParts[indexPart]
+        var indexRow = indexRow
+        var patternIDIter = projectPart.patternOrder.makeIterator()
+        guard indexRow >= 0 else {
+            return nil
+        }
+        while indexRow >= 0 {
+            guard let patternID = patternIDIter.next() else {
+                return nil
+            }
+            guard let pattern = patterns[patternID] else {
+                return nil
+            }
+            if indexRow < pattern.count {
+                return pattern.getRow(at: indexRow)
+            }
+            else {
+                indexRow -= pattern.count
+            }
+        }
+        return nil
+    }
 }

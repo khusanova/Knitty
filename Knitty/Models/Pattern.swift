@@ -138,6 +138,16 @@ struct Pattern: Identifiable, Codable {
         self.details = details
     }
     
+    func getRow(at index: Int) -> Row? {
+        guard index >= 0 && index < count else {
+            return nil
+        }
+        guard let row = rows[rowOrder[index]] else {
+            return nil
+        }
+        return row
+    }
+    
     mutating func updateRow(at index: Int, newRow: Row) {
         rows[newRow.id] = newRow
         rowOrder[index] = newRow.id
