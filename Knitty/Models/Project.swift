@@ -27,7 +27,7 @@ struct Project: Codable, Identifiable{
     }
     var projectParts: [ProjectPart]
     var patterns: [UUID: Pattern]
-    var currentProjectPart: UUID?
+    var currentProjectPart: Int?
     var description: String?
     var projectURL: URL?
     
