@@ -23,6 +23,14 @@ struct ContentView: View {
                     Text("Follow this pattern: ")
                 }
                 RowView(row: currentRow)
+                HStack {
+                    Button("-1"){
+                        viewModel.unravel()
+                    }
+                    Button("+1"){
+                        viewModel.knitRow()
+                    }
+                }
                 /*
                 HStack {
                       Button("-1") {

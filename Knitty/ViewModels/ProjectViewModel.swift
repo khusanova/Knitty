@@ -11,11 +11,15 @@ import Foundation
     var currentProject: Project
     var currentRowNumber: Int
     var currentRow: Row
-    var rowCount: Int{
+    var rowCount: Int {
         currentProject.projectParts[0].totalRowCounter
     }
     var isFinishedProjectPart: Bool {
         currentRowNumber > rowCount
+    }
+    
+    var canUnravel: Bool {
+        currentRowNumber > 0
     }
     
     init() {
@@ -38,6 +42,20 @@ import Foundation
         self.currentRowNumber = currentRowNumber
         self.currentRow = currentRow
         self.currentProject = currentProject
+    }
+    
+    func unravel() {
+        if canUnravel{
+            currentRowNumber -= 1
+            currentRow = currentProject.getRow(indexRow: currentRowNumber, indexPart: 0) ?? Row(instructions: "This row does not exist.")
+        }
+    }
+    
+    func knitRow() {
+        if !isFinishedProjectPart{
+            currentRowNumber += 1
+            currentRow = currentProject.getRow(indexRow: currentRowNumber, indexPart: 0) ?? Row(instructions: "This row does not exist.")
+        }
     }
 }
 
