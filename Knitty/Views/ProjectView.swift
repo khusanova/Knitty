@@ -11,10 +11,16 @@ import SwiftUI
 struct ProjectView: View {
     var viewModel: ProjectViewModel = ProjectViewModel()
     var body: some View {
-        //KnittingView(viewModel: viewModel)
-        VStack{
-            ForEach(viewModel.getProjectPartNames(), id: \.self) {
-                Text("\($0)")
+        if let projectPartIndex = viewModel.projectPartIndex {
+            KnittingView(viewModel: viewModel)
+        }
+        else{
+            VStack{
+                ForEach(Array(viewModel.getProjectPartNames().enumerated()), id: \.offset) { index, name in
+                    Button("\(name)"){
+                        viewModel.startKnitting(projectPartIndex: index)
+                    }
+                }
             }
         }
     }
