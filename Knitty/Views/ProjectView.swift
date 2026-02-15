@@ -7,9 +7,11 @@
 
 import SwiftUI
 
+/// When user opens a project for the first time they see this view and chose a project part.
 struct ProjectView: View {
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        var ViewModel: ProjectViewModel = ProjectViewModel()
+        
     }
 }
 
