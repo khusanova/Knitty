@@ -15,7 +15,7 @@ struct Project: Codable, Identifiable{
         var name: String
         var patternOrder: [UUID]
         var patternRowCounters: [Int]
-        var totalRowCounter: Int {
+        var rowCounter: Int {
             patternRowCounters.reduce(0, +)
         }
         
@@ -45,8 +45,8 @@ struct Project: Codable, Identifiable{
         self.projectURL = projectURL
     }
     
-    func totalRowCount(projectPart: ProjectPart) -> Int {
-        projectPart.patternOrder.compactMap { patterns[$0]?.count ?? 0}.reduce(0,+)
+    func totalRowCount(of projectPartIndex: Int) -> Int {
+        projectParts[projectPartIndex].patternOrder.compactMap { patterns[$0]?.count ?? 0}.reduce(0,+)
     }
     
     func getRow(indexRow: Int, indexPart: Int) -> Row? {
