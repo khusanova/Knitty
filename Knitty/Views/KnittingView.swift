@@ -23,14 +23,14 @@ struct KnittingView: View {
                     Text("Follow this pattern: ")
                 }
                 RowView(row: currentRow)
-//                HStack {
+                HStack {
 //                    Button("-1"){
 //                        viewModel.unravel()
 //                    }
-//                    Button("+1"){
-//                        viewModel.knitRow()
-//                    }
-//                }
+                    Button("Next Row"){
+                        viewModel.knitRow()
+                    }
+                }
 //                
 //                HStack {
 //                      Button("-1") {
