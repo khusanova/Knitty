@@ -11,20 +11,20 @@ import Foundation
     var project: Project
     var projectPartIndex: Int?
     var currentRowNumber: Int?
-    /*var currentRow: Row?
-    var rowCounter: Int? {
-        currentProject.projectParts[0].totalRowCounter
-    }
-    var count: Int? {
-        currentProject.totalRowCount(of: currentProjectPart)
-    }
-    var isFinishedProjectPart: Bool {
-        currentRowNumber > count
-    }
-    
-    var canUnravel: Bool {
-        currentRowNumber > 0
-    }*/
+    var currentRow: Row?
+//    var rowCounter: Int? {
+//        currentProject.projectParts[0].totalRowCounter
+//    }
+//    var count: Int? {
+//        currentProject.totalRowCount(of: currentProjectPart)
+//    }
+//    var isFinishedProjectPart: Bool {
+//        currentRowNumber > count
+//    }
+//    
+//    var canUnravel: Bool {
+//        currentRowNumber > 0
+//    }
     
     init() {
         //let currentRowNumber = UserDefaults.standard.integer(forKey: "rowNumber")
@@ -50,26 +50,34 @@ import Foundation
     
     func startKnitting(projectPartIndex: Int) {
         self.projectPartIndex = projectPartIndex
-        self.currentRowNumber = project.projectParts[projectPartIndex].rowCounter
+        let rowNumber = project.projectParts[projectPartIndex].rowCounter
+        self.currentRowNumber = rowNumber
+        self.currentRow = project.getRow(indexRow: rowNumber, indexPart: projectPartIndex) ?? Row(instructions: "This row does not exist.")
     }
     
     func getProjectPartNames() -> [String] {
         project.projectParts.map { $0.name }
     }
-    /*
-    func unravel() {
-        if canUnravel{
-            currentRowNumber -= 1
-            currentRow = currentProject.getRow(indexRow: currentRowNumber, indexPart: 0) ?? Row(instructions: "This row does not exist.")
-        }
-    }
+    
+//    func unravel() {
+//        if canUnravel{
+//            currentRowNumber -= 1
+//            currentRow = currentProject.getRow(indexRow: currentRowNumber, indexPart: 0) ?? Row(instructions: "This row does not exist.")
+//        }
+//    }
     
     func knitRow() {
-        if !isFinishedProjectPart{
-            currentRowNumber += 1
-            currentRow = currentProject.getRow(indexRow: currentRowNumber, indexPart: 0) ?? Row(instructions: "This row does not exist.")
+        guard let rowNumber = currentRowNumber else {
+            return
         }
-    }*/
+        guard let index = projectPartIndex else {
+            return
+        }
+        if rowNumber  < project.totalRowCount(of: index){
+            self.currentRowNumber = rowNumber + 1
+            currentRow = project.getRow(indexRow: rowNumber, indexPart: index) ?? Row(instructions: "This row does not exist.")
+        }
+    }
 }
 
 /*
