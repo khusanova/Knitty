@@ -52,6 +52,10 @@ import Foundation
         self.projectPartIndex = projectPartIndex
         self.currentRowNumber = project.projectParts[projectPartIndex].rowCounter
     }
+    
+    func getProjectPartNames() -> [String] {
+        project.projectParts.map { $0.name }
+    }
     /*
     func unravel() {
         if canUnravel{
