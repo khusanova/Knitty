@@ -8,42 +8,46 @@
 import Foundation
 
 @Observable class ProjectViewModel {
-    var currentProject: Project
-    var currentRowNumber: Int
-    var currentRow: Row
-    var rowCount: Int {
+    var project: Project
+    var projectPart: Int?
+    /*var currentRowNumber: Int?
+    var currentRow: Row?
+    var rowCounter: Int? {
         currentProject.projectParts[0].totalRowCounter
     }
+    var count: Int? {
+        currentProject.totalRowCount(of: currentProjectPart)
+    }
     var isFinishedProjectPart: Bool {
-        currentRowNumber > rowCount
+        currentRowNumber > count
     }
     
     var canUnravel: Bool {
         currentRowNumber > 0
-    }
+    }*/
     
     init() {
-        let currentRowNumber = UserDefaults.standard.integer(forKey: "rowNumber")
-        var currentProject: Project
-        var currentRow: Row
+        //let currentRowNumber = UserDefaults.standard.integer(forKey: "rowNumber")
+        //var project: Project
+        //var currentRow: Row
         do {
             guard let projectFileURL = Bundle.main.url(forResource: "banana-socks", withExtension: "json") else {
                 throw DataError.fileNotFound
             }
             let projectData = try Data(contentsOf: projectFileURL)
-            currentProject = try JSONDecoder().decode(Project.self, from: projectData)
+            self.project = try JSONDecoder().decode(Project.self, from: projectData)
         }
         catch {
-            currentProject = Project.bananaSocks
+            self.project = Project.bananaSocks
         }
         
-        currentRow = currentProject.getRow(indexRow: currentRowNumber, indexPart: 0) ?? Row(instructions: "Add a new row to the pattern.")
+        //currentRow = currentProject.getRow(indexRow: currentRowNumber, indexPart: 0) ?? Row(instructions: "Add a new row to the pattern.")
         
-        self.currentRowNumber = currentRowNumber
-        self.currentRow = currentRow
-        self.currentProject = currentProject
+        //self.currentRowNumber = currentRowNumber
+        //self.currentRow = currentRow
+        //self.currentProject = currentProject
     }
-    
+    /*
     func unravel() {
         if canUnravel{
             currentRowNumber -= 1
@@ -56,7 +60,7 @@ import Foundation
             currentRowNumber += 1
             currentRow = currentProject.getRow(indexRow: currentRowNumber, indexPart: 0) ?? Row(instructions: "This row does not exist.")
         }
-    }
+    }*/
 }
 
 /*
