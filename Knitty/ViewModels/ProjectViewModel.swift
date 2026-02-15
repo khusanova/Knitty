@@ -9,7 +9,7 @@ import Foundation
 
 @Observable class ProjectViewModel {
     var project: Project
-    var projectPart: Int?
+    var projectPartIndex: Int?
     var currentRowNumber: Int?
     /*var currentRow: Row?
     var rowCounter: Int? {
@@ -48,9 +48,9 @@ import Foundation
         //self.currentProject = currentProject
     }
     
-    func startKnitting(projectPart: Int) {
-        self.projectPart = projectPart
-        self.currentRowNumber = project.projectParts[projectPart].rowCounter
+    func startKnitting(projectPartIndex: Int) {
+        self.projectPartIndex = projectPartIndex
+        self.currentRowNumber = project.projectParts[projectPartIndex].rowCounter
     }
     /*
     func unravel() {
