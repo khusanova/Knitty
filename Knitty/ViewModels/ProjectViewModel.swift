@@ -8,36 +8,75 @@
 import Foundation
 
 @Observable class ProjectViewModel {
-    var currentProject: Project
-    var currentRowNumber: Int
-    var currentRow: Row
-    var rowCount: Int{
-        currentProject.projectParts[0].totalRowCounter
-    }
-    var isFinishedProjectPart: Bool {
-        currentRowNumber > rowCount
-    }
+    var project: Project
+    var projectPartIndex: Int?
+    var currentRowNumber: Int?
+    var currentRow: Row?
+//    var rowCounter: Int? {
+//        currentProject.projectParts[0].totalRowCounter
+//    }
+//    var count: Int? {
+//        currentProject.totalRowCount(of: currentProjectPart)
+//    }
+//    var isFinishedProjectPart: Bool {
+//        currentRowNumber > count
+//    }
+//    
+//    var canUnravel: Bool {
+//        currentRowNumber > 0
+//    }
     
     init() {
-        let currentRowNumber = UserDefaults.standard.integer(forKey: "rowNumber")
-        var currentProject: Project
-        var currentRow: Row
+        //let currentRowNumber = UserDefaults.standard.integer(forKey: "rowNumber")
+        //var project: Project
+        //var currentRow: Row
         do {
             guard let projectFileURL = Bundle.main.url(forResource: "banana-socks", withExtension: "json") else {
                 throw DataError.fileNotFound
             }
             let projectData = try Data(contentsOf: projectFileURL)
-            currentProject = try JSONDecoder().decode(Project.self, from: projectData)
+            self.project = try JSONDecoder().decode(Project.self, from: projectData)
         }
         catch {
-            currentProject = Project.bananaSocks
+            self.project = Project.bananaSocks
         }
         
-        currentRow = currentProject.getRow(indexRow: currentRowNumber, indexPart: 0) ?? Row(instructions: "Add a new row to the pattern.")
+        //currentRow = currentProject.getRow(indexRow: currentRowNumber, indexPart: 0) ?? Row(instructions: "Add a new row to the pattern.")
         
-        self.currentRowNumber = currentRowNumber
-        self.currentRow = currentRow
-        self.currentProject = currentProject
+        //self.currentRowNumber = currentRowNumber
+        //self.currentRow = currentRow
+        //self.currentProject = currentProject
+    }
+    
+    func startKnitting(projectPartIndex: Int) {
+        self.projectPartIndex = projectPartIndex
+        let rowNumber = project.projectParts[projectPartIndex].rowCounter
+        self.currentRowNumber = rowNumber
+        self.currentRow = project.getRow(indexRow: rowNumber, indexPart: projectPartIndex) ?? Row(instructions: "This row does not exist.")
+    }
+    
+    func getProjectPartNames() -> [String] {
+        project.projectParts.map { $0.name }
+    }
+    
+//    func unravel() {
+//        if canUnravel{
+//            currentRowNumber -= 1
+//            currentRow = currentProject.getRow(indexRow: currentRowNumber, indexPart: 0) ?? Row(instructions: "This row does not exist.")
+//        }
+//    }
+    
+    func knitRow() {
+        guard let rowNumber = currentRowNumber else {
+            return
+        }
+        guard let index = projectPartIndex else {
+            return
+        }
+        if rowNumber  < project.totalRowCount(of: index){
+            self.currentRowNumber = rowNumber + 1
+            currentRow = project.getRow(indexRow: rowNumber, indexPart: index) ?? Row(instructions: "This row does not exist.")
+        }
     }
 }
 

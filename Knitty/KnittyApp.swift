@@ -11,7 +11,7 @@ import SwiftUI
 struct KnittyApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            ProjectView()
         }
     }
 }
