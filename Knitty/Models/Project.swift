@@ -14,15 +14,12 @@ struct Project: Codable, Identifiable{
         var id = UUID()
         var name: String
         var patternOrder: [UUID]
-        var patternRowCounters: [Int]
-        var rowCounter: Int {
-            patternRowCounters.reduce(0, +)
-        }
+        var rowCounter: Int
         
         init(name: String, patterns: [Pattern]){
             self.name = name
             self.patternOrder = patterns.map { $0.id }
-            self.patternRowCounters = (0..<patternOrder.count).map {_ in 0}
+            self.rowCounter = 0
         }
     }
     var projectParts: [ProjectPart]

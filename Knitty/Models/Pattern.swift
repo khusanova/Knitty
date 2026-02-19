@@ -117,6 +117,7 @@ struct Pattern: Identifiable, Codable {
     var id = UUID()
     var rows: [UUID: Row]
     var rowOrder: [UUID]
+    var rowCounter: Int
     var name: String?
     var details: String?
     var count: Int {
@@ -127,6 +128,7 @@ struct Pattern: Identifiable, Codable {
         self.rowOrder = rows.map { $0.id }
         self.rows = Dictionary(rows.map { ($0.id, $0) },
                                uniquingKeysWith: { old, _ in old})
+        self.rowCounter = 0
         self.name = name
         self.details = details
     }
@@ -134,6 +136,7 @@ struct Pattern: Identifiable, Codable {
     init(baseRow: Row, length: Int, name: String? = nil, details: String? = nil) {
         self.rows = [baseRow.id: baseRow]
         self.rowOrder = (0..<length).map { _ in baseRow.id}
+        self.rowCounter = 0
         self.name = name
         self.details = details
     }
