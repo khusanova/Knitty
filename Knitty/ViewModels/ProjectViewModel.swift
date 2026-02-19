@@ -48,6 +48,16 @@ import Foundation
         self.currentRow = project.getRow(indexRow: rowNumber, indexPart: projectPartIndex) ?? Row(instructions: "This row does not exist.")
     }
     
+    func isFinishedProjectPart() -> Bool {
+        guard let rowNumber = currentRowNumber else {
+            return false
+        }
+        guard let index = projectPartIndex else {
+            return false
+        }
+        return rowNumber  == project.totalRowCount(of: index)
+    }
+    
     func getProjectPartNames() -> [String] {
         project.projectParts.map { $0.name }
     }
