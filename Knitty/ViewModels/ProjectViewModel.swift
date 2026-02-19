@@ -12,17 +12,8 @@ import Foundation
     var projectPartIndex: Int?
     var currentRowNumber: Int?
     var currentRow: Row?
-//    var rowCounter: Int? {
-//        currentProject.projectParts[0].totalRowCounter
-//    }
-//    var count: Int? {
-//        currentProject.totalRowCount(of: currentProjectPart)
-//    }
     
     init() {
-        //let currentRowNumber = UserDefaults.standard.integer(forKey: "rowNumber")
-        //var project: Project
-        //var currentRow: Row
         do {
             guard let projectFileURL = Bundle.main.url(forResource: "banana-socks", withExtension: "json") else {
                 throw DataError.fileNotFound
@@ -33,12 +24,6 @@ import Foundation
         catch {
             self.project = Project.bananaSocks
         }
-        
-        //currentRow = currentProject.getRow(indexRow: currentRowNumber, indexPart: 0) ?? Row(instructions: "Add a new row to the pattern.")
-        
-        //self.currentRowNumber = currentRowNumber
-        //self.currentRow = currentRow
-        //self.currentProject = currentProject
     }
     
     func startKnitting(projectPartIndex: Int) {
@@ -90,37 +75,3 @@ import Foundation
         self.currentRow = currentRow
     }
 }
-
-/*
-func loadProject(){
-    
-    
-}
-
-func completeRow(unravel: Bool = false) {
-    
-}
-
-func changeRow(goToNext: Bool = true) {
-    if goToNext{
-        guard displayedRow < currentProject.totalRowCount(projectPart: currentProjectPart) else {
-            return
-        }
-        displayedRow += 1
-    }
-    else{
-        guard displayedRow > 0 else {
-            return
-        }
-        displayedRow -= 1
-    }
-}
-
-func goToCurrentRow(){
-    displayedRow = currentRow
-}
-
-func chooseProjectPart() {
-    
-}
-*/
