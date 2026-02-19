@@ -69,10 +69,11 @@ import Foundation
         guard let index = projectPartIndex else {
             return
         }
-        if rowNumber > 0 {
-            self.currentRowNumber = rowNumber - 1
-            currentRow = project.getRow(indexRow: rowNumber, indexPart: index) ?? Row(instructions: "This row does not exist.")
+        guard let currentRow = project.getRow(indexRow: rowNumber - 1, indexPart: index) else {
+            return
         }
+        self.currentRowNumber = rowNumber - 1
+        self.currentRow = currentRow
     }
     
     func knitRow() {
@@ -82,10 +83,11 @@ import Foundation
         guard let index = projectPartIndex else {
             return
         }
-        if rowNumber  < project.totalRowCount(of: index){
-            self.currentRowNumber = rowNumber + 1
-            currentRow = project.getRow(indexRow: rowNumber, indexPart: index) ?? Row(instructions: "This row does not exist.")
+        guard let currentRow = project.getRow(indexRow: rowNumber + 1, indexPart: index) else {
+            return
         }
+        self.currentRowNumber = rowNumber + 1
+        self.currentRow = currentRow
     }
 }
 
