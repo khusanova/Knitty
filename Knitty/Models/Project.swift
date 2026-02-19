@@ -46,7 +46,7 @@ struct Project: Codable, Identifiable{
         projectParts[projectPartIndex].patternOrder.compactMap { patterns[$0]?.count ?? 0}.reduce(0,+)
     }
     
-    func getRow(indexRow: Int, indexPart: Int) -> Row? {
+    func getPattern(indexRow: Int, indexPart: Int) -> Pattern? {
         let projectPart = projectParts[indexPart]
         var indexRow = indexRow
         var patternIDIter = projectPart.patternOrder.makeIterator()
@@ -57,16 +57,24 @@ struct Project: Codable, Identifiable{
             guard let patternID = patternIDIter.next() else {
                 return nil
             }
-            guard let pattern = patterns[patternID] else {
+            guard var pattern = patterns[patternID] else {
                 return nil
             }
             if indexRow < pattern.count {
-                return pattern.getRow(at: indexRow)
+                pattern.rowCounter = indexRow
+                return pattern//.getRow(at: indexRow)
             }
             else {
                 indexRow -= pattern.count
             }
         }
         return nil
+    }
+    
+    func getRow(indexRow: Int, indexPart: Int) -> Row? {
+        guard let pattern = getPattern(indexRow: indexRow, indexPart: indexPart) else {
+            return nil
+        }
+        return pattern.getCurrentRow()
     }
 }

@@ -151,6 +151,10 @@ struct Pattern: Identifiable, Codable {
         return row
     }
     
+    func getCurrentRow() -> Row? {
+        getRow(at: rowCounter)
+    }
+    
     mutating func updateRow(at index: Int, newRow: Row) {
         rows[newRow.id] = newRow
         rowOrder[index] = newRow.id
