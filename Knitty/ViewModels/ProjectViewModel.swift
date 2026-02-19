@@ -18,13 +18,6 @@ import Foundation
 //    var count: Int? {
 //        currentProject.totalRowCount(of: currentProjectPart)
 //    }
-//    var isFinishedProjectPart: Bool {
-//        currentRowNumber > count
-//    }
-//    
-//    var canUnravel: Bool {
-//        currentRowNumber > 0
-//    }
     
     init() {
         //let currentRowNumber = UserDefaults.standard.integer(forKey: "rowNumber")
@@ -59,12 +52,18 @@ import Foundation
         project.projectParts.map { $0.name }
     }
     
-//    func unravel() {
-//        if canUnravel{
-//            currentRowNumber -= 1
-//            currentRow = currentProject.getRow(indexRow: currentRowNumber, indexPart: 0) ?? Row(instructions: "This row does not exist.")
-//        }
-//    }
+    func unravel() {
+        guard let rowNumber = currentRowNumber else {
+            return
+        }
+        guard let index = projectPartIndex else {
+            return
+        }
+        if rowNumber > 0 {
+            self.currentRowNumber = rowNumber - 1
+            currentRow = project.getRow(indexRow: rowNumber, indexPart: index) ?? Row(instructions: "This row does not exist.")
+        }
+    }
     
     func knitRow() {
         guard let rowNumber = currentRowNumber else {
