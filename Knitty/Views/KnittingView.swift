@@ -36,10 +36,12 @@ struct KnittingView: View {
         else {
             Text("Congratulations! You've completed this project part!")
         }
+        Button("Go back to project") {
+            viewModel.projectPartIndex = nil
         }
-        
+        }
 }
 
-//#Preview {
-//    ProjectView()
-//}
+#Preview {
+    ProjectView()
+}
