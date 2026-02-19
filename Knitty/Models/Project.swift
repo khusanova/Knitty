@@ -77,4 +77,14 @@ struct Project: Codable, Identifiable{
         }
         return pattern.getCurrentRow()
     }
+    
+    mutating func addProgressOnProjectPart(at rowIndex: Int, for projectPartIndex: Int) {
+        guard projectPartIndex < projectParts.count else {
+            return
+        }
+        guard projectPartIndex >= 0 else {
+            return
+        }
+        projectParts[projectPartIndex].rowCounter = rowIndex
+    }
 }

@@ -43,6 +43,16 @@ import Foundation
         return rowNumber  == project.totalRowCount(of: index)
     }
     
+    func updateCurrentProjectPart() {
+        guard let rowNumber = currentRowNumber else {
+            return
+        }
+        guard let partIndex = projectPartIndex else {
+            return
+        }
+        project.addProgressOnProjectPart(at: rowNumber, for: partIndex)
+    }
+    
     func getProjectPartNames() -> [String] {
         project.projectParts.map { $0.name }
     }
