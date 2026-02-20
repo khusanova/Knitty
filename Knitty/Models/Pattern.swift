@@ -117,6 +117,7 @@ struct Pattern: Identifiable, Codable {
     var id = UUID()
     var rows: [UUID: Row]
     var rowOrder: [UUID]
+    var rowCounter: Int?
     var name: String?
     var details: String?
     var count: Int {
@@ -146,6 +147,13 @@ struct Pattern: Identifiable, Codable {
             return nil
         }
         return row
+    }
+    
+    func getCurrentRow() -> Row? {
+        guard let index = rowCounter else {
+            return nil
+        }
+        return getRow(at: index)
     }
     
     mutating func updateRow(at index: Int, newRow: Row) {

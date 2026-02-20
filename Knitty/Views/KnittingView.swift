@@ -13,53 +13,36 @@ struct KnittingView: View {
     var viewModel: ProjectViewModel
     var rowNumber: Int { viewModel.currentRowNumber ?? 0}
     var currentRow: Row { viewModel.currentRow ?? Row(instructions: "This row does not exist.")}
-//    var isFinishedProjectPart: Bool {viewModel.isFinishedProjectPart}
     var body: some View {
-        if true{
+        if !viewModel.isFinished {
             VStack {
                 Text("🧶 Knit!!!").font(.largeTitle)
-//                Text("You are at the row \(rowNumber+1)")
+                Text("You are at the row \(rowNumber+1)")
                 HStack{
                     Text("Follow this pattern: ")
                 }
                 RowView(row: currentRow)
                 HStack {
-//                    Button("-1"){
-//                        viewModel.unravel()
-//                    }
+                    Button("Unravel"){
+                        viewModel.unravel()
+                    }
                     Button("Next Row"){
                         viewModel.knitRow()
                     }
                 }
-//                
-//                HStack {
-//                      Button("-1") {
-//                          rowNumber -= 1
-//                          if rowNumber < 0{
-//                              rowNumber = 0
-//                          }
-//                          UserDefaults.standard.set(rowNumber, forKey: "rowNumber")
-//                      }
-//                                                            
-//                      Button("+1") {
-//                          rowNumber += 1
-//                          UserDefaults.standard.set(rowNumber, forKey: "rowNumber")
-//                      }
-//                  }
             }
             .padding()
         }
         else {
-            Text("Congratulations!")
-            /*
-            Button("Start again"){
-                rowNumber = 0
-            }*/
+            Text("Congratulations! You've completed this project part!")
+        }
+        Button("Go back to project") {
+            viewModel.updateCurrentProjectPart()
+            viewModel.projectPartIndex = nil
         }
         }
-        
 }
 
-//#Preview {
-//    ProjectView()
-//}
+#Preview {
+    ProjectView()
+}

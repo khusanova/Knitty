@@ -14,15 +14,14 @@ struct Project: Codable, Identifiable{
         var id = UUID()
         var name: String
         var patternOrder: [UUID]
-        var patternRowCounters: [Int]
-        var rowCounter: Int {
-            patternRowCounters.reduce(0, +)
-        }
+        var rowCounter: Int
+        var isFinished: Bool
         
         init(name: String, patterns: [Pattern]){
             self.name = name
             self.patternOrder = patterns.map { $0.id }
-            self.patternRowCounters = (0..<patternOrder.count).map {_ in 0}
+            self.rowCounter = 0
+            self.isFinished = false
         }
     }
     var projectParts: [ProjectPart]
@@ -49,7 +48,7 @@ struct Project: Codable, Identifiable{
         projectParts[projectPartIndex].patternOrder.compactMap { patterns[$0]?.count ?? 0}.reduce(0,+)
     }
     
-    func getRow(indexRow: Int, indexPart: Int) -> Row? {
+    func getPattern(indexRow: Int, indexPart: Int) -> Pattern? {
         let projectPart = projectParts[indexPart]
         var indexRow = indexRow
         var patternIDIter = projectPart.patternOrder.makeIterator()
@@ -60,16 +59,40 @@ struct Project: Codable, Identifiable{
             guard let patternID = patternIDIter.next() else {
                 return nil
             }
-            guard let pattern = patterns[patternID] else {
+            guard var pattern = patterns[patternID] else {
                 return nil
             }
             if indexRow < pattern.count {
-                return pattern.getRow(at: indexRow)
+                pattern.rowCounter = indexRow
+                return pattern//.getRow(at: indexRow)
             }
             else {
                 indexRow -= pattern.count
             }
         }
         return nil
+    }
+    
+    func getRow(indexRow: Int, indexPart: Int) -> Row? {
+        guard let pattern = getPattern(indexRow: indexRow, indexPart: indexPart) else {
+            return nil
+        }
+        return pattern.getCurrentRow()
+    }
+    
+    mutating func addProgressOnProjectPart(at rowIndex: Int, for projectPartIndex: Int) {
+        guard projectPartIndex < projectParts.count else {
+            return
+        }
+        guard projectPartIndex >= 0 else {
+            return
+        }
+        guard projectPartIndex <= totalRowCount(of: projectPartIndex) else{
+            return
+        }
+        projectParts[projectPartIndex].rowCounter = rowIndex
+        if rowIndex == totalRowCount(of: projectPartIndex) {
+            projectParts[projectPartIndex].isFinished = true
+        }
     }
 }

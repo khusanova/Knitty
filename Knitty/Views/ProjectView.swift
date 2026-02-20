@@ -8,8 +8,9 @@
 import SwiftUI
 
 /// When user opens a project for the first time they see this view and chose a project part.
+/// if user already works on the project, then the last project part user worked on is displayed as knitting view
 struct ProjectView: View {
-    var viewModel: ProjectViewModel = ProjectViewModel()
+    @State var viewModel: ProjectViewModel = ProjectViewModel()
     var body: some View {
         if let projectPartIndex = viewModel.projectPartIndex {
             KnittingView(viewModel: viewModel)
