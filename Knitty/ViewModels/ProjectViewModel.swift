@@ -9,6 +9,7 @@ import Foundation
 
 @Observable class ProjectViewModel {
     var project: Project
+    var isFinished: Bool = false
     var projectPartIndex: Int?
     var currentRowNumber: Int?
     var currentRow: Row?
@@ -28,19 +29,13 @@ import Foundation
     
     func startKnitting(projectPartIndex: Int) {
         self.projectPartIndex = projectPartIndex
-        let rowNumber = project.projectParts[projectPartIndex].rowCounter
-        self.currentRowNumber = rowNumber
-        self.currentRow = project.getRow(indexRow: rowNumber, indexPart: projectPartIndex) ?? Row(instructions: "This row does not exist.")
-    }
-    
-    func isFinishedProjectPart() -> Bool {
-        guard let rowNumber = currentRowNumber else {
-            return false
+        let isFinished = project.projectParts[projectPartIndex].isFinished
+        self.isFinished = isFinished
+        if !isFinished{
+            let rowNumber = project.projectParts[projectPartIndex].rowCounter
+            self.currentRowNumber = rowNumber
+            self.currentRow = project.getRow(indexRow: rowNumber, indexPart: projectPartIndex) ?? Row(instructions: "This row does not exist.")
         }
-        guard let index = projectPartIndex else {
-            return false
-        }
-        return rowNumber  == project.totalRowCount(of: index)
     }
     
     func updateCurrentProjectPart() {
@@ -78,10 +73,13 @@ import Foundation
         guard let index = projectPartIndex else {
             return
         }
+        if rowNumber + 1 == project.totalRowCount(of: index){
+            self.isFinished = true
+        }
+        self.currentRowNumber = rowNumber + 1
         guard let currentRow = project.getRow(indexRow: rowNumber + 1, indexPart: index) else {
             return
         }
-        self.currentRowNumber = rowNumber + 1
         self.currentRow = currentRow
     }
 }

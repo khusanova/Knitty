@@ -15,11 +15,13 @@ struct Project: Codable, Identifiable{
         var name: String
         var patternOrder: [UUID]
         var rowCounter: Int
+        var isFinished: Bool
         
         init(name: String, patterns: [Pattern]){
             self.name = name
             self.patternOrder = patterns.map { $0.id }
             self.rowCounter = 0
+            self.isFinished = false
         }
     }
     var projectParts: [ProjectPart]
@@ -85,6 +87,12 @@ struct Project: Codable, Identifiable{
         guard projectPartIndex >= 0 else {
             return
         }
+        guard projectPartIndex <= totalRowCount(of: projectPartIndex) else{
+            return
+        }
         projectParts[projectPartIndex].rowCounter = rowIndex
+        if rowIndex == totalRowCount(of: projectPartIndex) {
+            projectParts[projectPartIndex].isFinished = true
+        }
     }
 }

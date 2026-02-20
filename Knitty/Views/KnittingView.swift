@@ -14,7 +14,7 @@ struct KnittingView: View {
     var rowNumber: Int { viewModel.currentRowNumber ?? 0}
     var currentRow: Row { viewModel.currentRow ?? Row(instructions: "This row does not exist.")}
     var body: some View {
-        if !viewModel.isFinishedProjectPart() {
+        if !viewModel.isFinished {
             VStack {
                 Text("🧶 Knit!!!").font(.largeTitle)
                 Text("You are at the row \(rowNumber+1)")
