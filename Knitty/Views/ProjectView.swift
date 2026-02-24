@@ -12,7 +12,7 @@ import SwiftUI
 struct ProjectView: View {
     @State var viewModel: ProjectViewModel = ProjectViewModel()
     var body: some View {
-        if let projectPartIndex = viewModel.projectPartIndex {
+        if viewModel.projectPartIndex != nil {
             KnittingView(viewModel: viewModel)
         }
         else{
