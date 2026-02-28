@@ -9,14 +9,20 @@ import Foundation
 
 @Observable class ProjectViewModel {
     var project: Project
+    var projectName: String {
+        didSet {
+            UserDefaults.standard.set(projectName, forKey: "projectName")
+        }
+    }
     var isFinished: Bool = false
     var projectPartIndex: Int?
     var currentRowNumber: Int?
     var currentRow: Row?
     
-    init(projectName: String = "banana-socks") {
+    init() {
+        let defaultProjectName = UserDefaults.standard.string(forKey: "projectName") ?? "banana-socks"
         do {
-            guard let projectFileURL = Bundle.main.url(forResource: projectName, withExtension: "json") else {
+            guard let projectFileURL = Bundle.main.url(forResource: defaultProjectName, withExtension: "json") else {
                 throw DataError.fileNotFound
             }
             let projectData = try Data(contentsOf: projectFileURL)
@@ -25,6 +31,7 @@ import Foundation
         catch {
             self.project = Project.bananaSocks
         }
+        self.projectName = defaultProjectName
     }
     
     func startKnitting(projectPartIndex: Int) {
