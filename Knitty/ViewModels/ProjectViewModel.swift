@@ -12,6 +12,7 @@ import Foundation
     var projectName: String {
         didSet {
             UserDefaults.standard.set(projectName, forKey: "projectName")
+            self.project = ProjectViewModel.loadProject(projectName: projectName)
         }
     }
     var isFinished: Bool = false
