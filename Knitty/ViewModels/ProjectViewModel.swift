@@ -14,9 +14,9 @@ import Foundation
     var currentRowNumber: Int?
     var currentRow: Row?
     
-    init() {
+    init(projectName: String = "banana-socks") {
         do {
-            guard let projectFileURL = Bundle.main.url(forResource: "banana-socks", withExtension: "json") else {
+            guard let projectFileURL = Bundle.main.url(forResource: projectName, withExtension: "json") else {
                 throw DataError.fileNotFound
             }
             let projectData = try Data(contentsOf: projectFileURL)
