@@ -21,16 +21,7 @@ import Foundation
     
     init() {
         let defaultProjectName = UserDefaults.standard.string(forKey: "projectName") ?? "banana-socks"
-        do {
-            guard let projectFileURL = Bundle.main.url(forResource: defaultProjectName, withExtension: "json") else {
-                throw DataError.fileNotFound
-            }
-            let projectData = try Data(contentsOf: projectFileURL)
-            self.project = try JSONDecoder().decode(Project.self, from: projectData)
-        }
-        catch {
-            self.project = Project.bananaSocks
-        }
+        self.project = ProjectViewModel.loadProject(projectName: defaultProjectName)
         self.projectName = defaultProjectName
     }
     
@@ -88,5 +79,18 @@ import Foundation
             return
         }
         self.currentRow = currentRow
+    }
+    
+    static func loadProject(projectName: String) -> Project {
+        do {
+            guard let projectFileURL = Bundle.main.url(forResource: projectName, withExtension: "json") else {
+                throw DataError.fileNotFound
+            }
+            let projectData = try Data(contentsOf: projectFileURL)
+            return try JSONDecoder().decode(Project.self, from: projectData)
+        }
+        catch {
+            return Project.bananaSocks
+        }
     }
 }
