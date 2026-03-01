@@ -42,6 +42,7 @@ import Foundation
     }
     
     func startKnitting(projectPartIndex: Int) {
+        self.saveProject()
         let isFinished = project.projectParts[projectPartIndex].isFinished
         self.isFinished = isFinished
         if !isFinished {
@@ -105,10 +106,10 @@ import Foundation
     
     static func loadProject(projectName: String) -> Project {
         do {
-            guard let projectFileURL = Bundle.main.url(forResource: projectName, withExtension: "json") else {
+            let projectFileURL = ProjectViewModel.documentsURL.appendingPathComponent(projectName + ".json")
+            guard let projectData = try? Data(contentsOf: projectFileURL) else {
                 throw DataError.fileNotFound
             }
-            let projectData = try Data(contentsOf: projectFileURL)
             return try JSONDecoder().decode(Project.self, from: projectData)
         }
         catch {
