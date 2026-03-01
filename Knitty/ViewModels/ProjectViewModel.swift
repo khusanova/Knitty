@@ -16,14 +16,16 @@ import Foundation
         }
     }
     var isFinished: Bool = false
-    var projectPartIndex: Int? {
+    var currentPosition: (partIndex: Int, rowNumber: Int)? {
         didSet {
-            UserDefaults.standard.set(projectPartIndex, forKey: "projectPartIndex")
-        }
-    }
-    var currentRowNumber: Int? {
-        didSet {
-            UserDefaults.standard.set(currentRowNumber, forKey: "currentRowNumber")
+            if let position = currentPosition {
+                UserDefaults.standard.set(position.partIndex, forKey: "currentPartIndex")
+                UserDefaults.standard.set(position.rowNumber, forKey: "currentRowNumber")
+            }
+            else {
+                UserDefaults.standard.removeObject(forKey: "currentPartIndex")
+                UserDefaults.standard.removeObject(forKey: "currentRowNumber")
+            }
         }
     }
     var currentRow: Row?
@@ -32,22 +34,25 @@ import Foundation
         let defaultProjectName = UserDefaults.standard.string(forKey: "projectName") ?? "banana-socks"
         self.project = ProjectViewModel.loadProject(projectName: defaultProjectName)
         self.projectName = defaultProjectName
+        let partIndex = UserDefaults.standard.object(forKey: "currentPartIndex") as? Int
+        let rowNumber = UserDefaults.standard.object(forKey: "currentRowNumber") as? Int
+        if let partIndex, let rowNumber {
+            self.currentPosition = (partIndex, rowNumber)
+        }
     }
     
     func startKnitting(projectPartIndex: Int) {
-        self.projectPartIndex = projectPartIndex
         let isFinished = project.projectParts[projectPartIndex].isFinished
         self.isFinished = isFinished
         if !isFinished {
             let rowNumber = project.projectParts[projectPartIndex].rowCounter
-            self.currentRowNumber = rowNumber
+            self.currentPosition = (projectPartIndex, rowNumber)
             self.currentRow = project.getRow(indexRow: rowNumber, indexPart: projectPartIndex) ?? Row(instructions: "This row does not exist.")
         }
     }
     
     func updateCurrentProjectPart() {
-        guard let rowNumber = currentRowNumber,
-              let partIndex = projectPartIndex else {
+        guard let (partIndex, rowNumber) = currentPosition else {
             return
         }
         project.addProgressOnProjectPart(at: rowNumber, for: partIndex)
@@ -58,32 +63,30 @@ import Foundation
     }
     
     func unravel() {
-        guard let rowNumber = currentRowNumber else {
+        guard var (partIndex, rowNumber) = currentPosition else {
             return
         }
-        guard let index = projectPartIndex else {
+        guard let currentRow = project.getRow(indexRow: rowNumber - 1, indexPart: partIndex) else {
             return
         }
-        guard let currentRow = project.getRow(indexRow: rowNumber - 1, indexPart: index) else {
-            return
-        }
-        self.currentRowNumber = rowNumber - 1
+        rowNumber -= 1
         self.currentRow = currentRow
+        self.currentPosition = (partIndex, rowNumber)
     }
     
     func knitRow() {
-        guard let rowNumber = currentRowNumber,
-              let index = projectPartIndex else {
+        guard var (partIndex, rowNumber) = currentPosition else {
             return
         }
-        if rowNumber + 1 == project.totalRowCount(of: index) {
+        if rowNumber + 1 == project.totalRowCount(of: partIndex) {
             self.isFinished = true
         }
-        self.currentRowNumber = rowNumber + 1
-        guard let currentRow = project.getRow(indexRow: rowNumber + 1, indexPart: index) else {
+        guard let currentRow = project.getRow(indexRow: rowNumber + 1, indexPart: partIndex) else {
             return
         }
+        rowNumber += 1
         self.currentRow = currentRow
+        self.currentPosition = (partIndex, rowNumber)
     }
     
     static func loadProject(projectName: String) -> Project {

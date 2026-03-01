@@ -11,13 +11,15 @@ import SwiftUI
 
 struct KnittingView: View {
     var viewModel: ProjectViewModel
-    var rowNumber: Int { viewModel.currentRowNumber ?? 0}
+    var currentPosition: (partIndex: Int, rowNumber: Int) {
+        viewModel.currentPosition ?? (0, 0)
+    }
     var currentRow: Row { viewModel.currentRow ?? Row(instructions: "This row does not exist.")}
     var body: some View {
         if !viewModel.isFinished {
             VStack {
                 Text("🧶 Knit!!!").font(.largeTitle)
-                Text("You are at the row \(rowNumber+1)")
+                Text("You are at the row \(currentPosition.rowNumber+1)")
                 HStack{
                     Text("Follow this pattern: ")
                 }
@@ -38,7 +40,7 @@ struct KnittingView: View {
         }
         Button("Go back to project") {
             viewModel.updateCurrentProjectPart()
-            viewModel.projectPartIndex = nil
+            viewModel.currentPosition = nil
         }
         }
 }
