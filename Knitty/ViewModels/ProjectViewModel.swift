@@ -16,7 +16,11 @@ import Foundation
         }
     }
     var isFinished: Bool = false
-    var projectPartIndex: Int?
+    var projectPartIndex: Int? {
+        didSet {
+            UserDefaults.standard.set(projectPartIndex, forKey: "projectPartIndex")
+        }
+    }
     var currentRowNumber: Int?
     var currentRow: Row?
     
