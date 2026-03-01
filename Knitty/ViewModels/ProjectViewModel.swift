@@ -1,5 +1,5 @@
 //
-//  PatternViewModel.swift
+//  ProjectViewModel.swift
 //  Knitty
 //
 //  Created by Y. Khusanova on 29.01.26.
@@ -38,7 +38,7 @@ import Foundation
         self.projectPartIndex = projectPartIndex
         let isFinished = project.projectParts[projectPartIndex].isFinished
         self.isFinished = isFinished
-        if !isFinished{
+        if !isFinished {
             let rowNumber = project.projectParts[projectPartIndex].rowCounter
             self.currentRowNumber = rowNumber
             self.currentRow = project.getRow(indexRow: rowNumber, indexPart: projectPartIndex) ?? Row(instructions: "This row does not exist.")
@@ -46,10 +46,8 @@ import Foundation
     }
     
     func updateCurrentProjectPart() {
-        guard let rowNumber = currentRowNumber else {
-            return
-        }
-        guard let partIndex = projectPartIndex else {
+        guard let rowNumber = currentRowNumber,
+              let partIndex = projectPartIndex else {
             return
         }
         project.addProgressOnProjectPart(at: rowNumber, for: partIndex)
@@ -74,13 +72,11 @@ import Foundation
     }
     
     func knitRow() {
-        guard let rowNumber = currentRowNumber else {
+        guard let rowNumber = currentRowNumber,
+              let index = projectPartIndex else {
             return
         }
-        guard let index = projectPartIndex else {
-            return
-        }
-        if rowNumber + 1 == project.totalRowCount(of: index){
+        if rowNumber + 1 == project.totalRowCount(of: index) {
             self.isFinished = true
         }
         self.currentRowNumber = rowNumber + 1
