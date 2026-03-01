@@ -89,6 +89,20 @@ import Foundation
         self.currentPosition = (partIndex, rowNumber)
     }
     
+    func saveProject() -> Bool {
+        let fileURL = ProjectViewModel.documentsURL.appendingPathComponent(self.projectName + ".json")
+        do {
+            let projectData = try JSONEncoder().encode(self.project)
+            try projectData.write(to: fileURL)
+            return true
+        }
+        catch {
+            return false
+        }
+    }
+    
+    static let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+    
     static func loadProject(projectName: String) -> Project {
         do {
             guard let projectFileURL = Bundle.main.url(forResource: projectName, withExtension: "json") else {
