@@ -39,8 +39,10 @@ struct KnittingView: View {
             Text("Congratulations! You've completed this project part!")
         }
         Button("Go back to project") {
-            viewModel.updateCurrentProjectPart()
-            viewModel.currentPosition = nil
+            if viewModel.saveProject() {
+                viewModel.updateCurrentProjectPart()
+                viewModel.currentPosition = nil
+            }
         }
         }
 }
