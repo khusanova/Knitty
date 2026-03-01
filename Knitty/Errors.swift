@@ -10,3 +10,8 @@ import Foundation
 enum DataError: Error {
     case fileNotFound
 }
+
+enum SaveError: Error {
+    case encodingError
+    case writeError
+}
