@@ -21,7 +21,11 @@ import Foundation
             UserDefaults.standard.set(projectPartIndex, forKey: "projectPartIndex")
         }
     }
-    var currentRowNumber: Int?
+    var currentRowNumber: Int? {
+        didSet {
+            UserDefaults.standard.set(currentRowNumber, forKey: "currentRowNumber")
+        }
+    }
     var currentRow: Row?
     
     init() {
