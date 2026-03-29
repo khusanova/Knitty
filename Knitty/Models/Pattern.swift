@@ -38,79 +38,9 @@ struct RowElement: Identifiable, Codable {
     var abbreviation: String
 }
 
-struct LiteRow: Identifiable, Codable {
+struct Row: Identifiable, Codable {
     var id = UUID()
     var instructions: String
-}
-
-typealias Row = LiteRow
-
-struct ParsedRow: Identifiable, Codable {
-    var id = UUID()
-    var elements: [RowElement]
-    var completed: Bool = false
-    var count: Int {
-        elements.count
-    }
-    
-    init(stitches: [String], rowExtras: [Int: String] = [:]) {
-        var rowElements: [RowElement] = []
-        
-        for i in 1...stitches.count {
-            rowElements.append(RowElement(number: "\(i)", abbreviation: stitches[i-1]))
-        }
-        
-        if Self.checkExtrasIndexes(rowExtras, count: stitches.count) {
-            let sortedExtras = rowExtras.sorted {$0.key > $1.key}
-            for (position, abbreviation) in sortedExtras {
-                let elementType = RowElementType(from: abbreviation)
-                switch elementType {
-                case .increase:
-                    rowElements.insert(RowElement(number: "\(position)+", abbreviation: abbreviation), at: position)
-                case .decrease:
-                    rowElements[position] = RowElement(number: "-", abbreviation: abbreviation)
-                case .marker:
-                    rowElements[position] = RowElement(number: " ", abbreviation: "M")
-                case .endOfNeedle:
-                    rowElements.insert(RowElement(number: " ", abbreviation: "E"), at: position)
-                default:
-                    self.elements = rowElements //add some warning or error
-                }
-            }
-        } else {
-            self.elements = rowElements
-        }
-        
-        self.elements = rowElements
-    }
-        
-    mutating func append(_ row: ParsedRow) {
-        self.elements += row.elements
-    }
-    
-    static func generateStitches(basePattern: [String], n: Int) -> [String] {
-        var result: [String] = []
-        let length = basePattern.count
-        
-        for i in 0..<n {
-            result.append(basePattern[i % length])
-        }
-        
-        return result
-    }
-    
-    static func checkExtrasIndexes(_ newExtras: [Int: String], count: Int) -> Bool {
-        guard newExtras.allSatisfy({ $0.key < count }) else {
-            return false
-        }
-        return true
-    }
-    
-    static func + (lhs: ParsedRow, rhs: ParsedRow) -> ParsedRow {
-        var result = lhs
-        result.append(rhs)
-        return result
-    }
 }
 
 struct Pattern: Identifiable, Codable {
