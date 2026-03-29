@@ -22,6 +22,9 @@ struct ProjectView: View {
                         viewModel.startKnitting(projectPartIndex: index)
                     }
                 }
+                Button("Add project part"){
+                    
+                }
             }
         }
     }
