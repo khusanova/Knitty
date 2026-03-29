@@ -12,7 +12,12 @@ import SwiftUI
 struct ProjectView: View {
     @State var viewModel: ProjectViewModel = ProjectViewModel()
     @State var isAddingPart = false
-    @State var newPartName = ""
+    @State var showNameValidationRules = false
+    @State var newPartName = "New project part"
+    @FocusState private var isTextFieldFocused: Bool
+    var isValidName: Bool {
+        !newPartName.trimmingCharacters(in: .whitespaces).isEmpty && !viewModel.getProjectPartNames().contains(newPartName)
+    }
     var body: some View {
         if viewModel.currentPosition != nil {
             KnittingView(viewModel: viewModel)
@@ -26,14 +31,27 @@ struct ProjectView: View {
                 }
                 Button("Add project part"){
                     isAddingPart = true
+                    isTextFieldFocused = true
                 }
                 if isAddingPart {
                     TextField("Part name", text: $newPartName)
+                        .focused($isTextFieldFocused)
                         .onSubmit {
+                            guard isValidName else {
+                                showNameValidationRules = true
+                                if viewModel.getProjectPartNames().contains(newPartName){
+                                    newPartName += " (2)"
+                                    isTextFieldFocused = true
+                                }
+                                return
+                            }
                             viewModel.addProjectPart(name: newPartName)
-                            newPartName = ""
                             isAddingPart = false
+                            newPartName = "New project part"
                         }
+                    if showNameValidationRules {
+                        Text("Name must be unique and non-empty.")
+                    }
                 }
             }
         }
