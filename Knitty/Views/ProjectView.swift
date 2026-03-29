@@ -29,6 +29,11 @@ struct ProjectView: View {
                 }
                 if isAddingPart {
                     TextField("Part name", text: $newPartName)
+                        .onSubmit {
+                            viewModel.addProjectPart(name: newPartName)
+                            newPartName = ""
+                            isAddingPart = false
+                        }
                 }
             }
         }
