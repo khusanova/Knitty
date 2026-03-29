@@ -7,37 +7,6 @@
 
 import Foundation
 
-enum RowElementType {
-    case stitch, marker, increase, decrease, endOfNeedle
-    static let abbreviations = [
-        "stitch": ["k", "p"],
-        "increase": ["m1l", "m1r"],
-        "decrease": ["k2tog", "skp"],
-        "marker": ["blue", "green", "yellow", "magenta", "red", "orange"],
-        "end of needle": ["end of needle"]
-    ]
-    
-    init?(from abbreviation: String) {
-        guard let elementType = Self.abbreviations.first(where: { $0.value.contains(abbreviation) }) else {
-            return nil
-        }
-        switch elementType.key {
-        case "stitch": self = .stitch
-        case "increase": self = .increase
-        case "decrease": self = .decrease
-        case "marker": self = .marker
-        case "end of needle": self = .endOfNeedle
-        default: return nil
-        }
-    }
-}
-
-struct RowElement: Identifiable, Codable {
-    var id = UUID()
-    var number: String
-    var abbreviation: String
-}
-
 struct Row: Identifiable, Codable {
     var id = UUID()
     var instructions: String
