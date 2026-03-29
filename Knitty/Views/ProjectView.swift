@@ -11,6 +11,8 @@ import SwiftUI
 /// if user already works on the project, then the last project part user worked on is displayed as knitting view
 struct ProjectView: View {
     @State var viewModel: ProjectViewModel = ProjectViewModel()
+    @State var isAddingPart = false
+    @State var newPartName = ""
     var body: some View {
         if viewModel.currentPosition != nil {
             KnittingView(viewModel: viewModel)
@@ -23,7 +25,10 @@ struct ProjectView: View {
                     }
                 }
                 Button("Add project part"){
-                    
+                    isAddingPart = true
+                }
+                if isAddingPart {
+                    TextField("Part name", text: $newPartName)
                 }
             }
         }
