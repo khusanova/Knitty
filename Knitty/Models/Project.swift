@@ -80,6 +80,10 @@ struct Project: Codable, Identifiable{
         return pattern.getCurrentRow()
     }
     
+    mutating func addProjectPart(name: String) {
+        self.projectParts.append(ProjectPart(name: name, patterns: []))
+    }
+    
     mutating func addProgressOnProjectPart(at rowIndex: Int, for projectPartIndex: Int) {
         guard projectPartIndex < projectParts.count else {
             return

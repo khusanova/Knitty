@@ -41,6 +41,10 @@ import Foundation
         }
     }
     
+    func addProjectPart(name: String) {
+        self.project.addProjectPart(name: name)
+    }
+    
     func startKnitting(projectPartIndex: Int) {
         self.saveProject()
         let isFinished = project.projectParts[projectPartIndex].isFinished
