@@ -107,15 +107,6 @@ import Foundation
     }
     
     static let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
-    
-    static func savedProjectNames() -> [String] {
-        guard let files = try? FileManager.default.contentsOfDirectory(at: documentsURL, includingPropertiesForKeys: nil) else {
-            return []
-        }
-        return files
-            .filter { $0.pathExtension == "json" }
-            .map { $0.deletingPathExtension().lastPathComponent }
-    }
 
     static func loadProject(projectName: String) -> Project {
         do {

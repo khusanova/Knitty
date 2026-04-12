@@ -25,7 +25,7 @@ struct MainView: View {
             }
         }
         .onAppear {
-            savedProjects = ProjectViewModel.savedProjectNames()
+            savedProjects = MainMenuViewModel.savedProjectNames()
         }
     }
 }
