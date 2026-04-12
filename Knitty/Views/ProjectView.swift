@@ -10,7 +10,13 @@ import SwiftUI
 /// When user opens a project for the first time they see this view and chose a project part.
 /// if user already works on the project, then the last project part user worked on is displayed as knitting view
 struct ProjectView: View {
+    var projectName: String
     @State var viewModel: ProjectViewModel = ProjectViewModel()
+
+    init(projectName: String? = nil) {
+        self.projectName = projectName ?? UserDefaults.standard.string(forKey: "projectName") ?? "banana-socks"
+        self._viewModel = State(initialValue: ProjectViewModel(projectName: self.projectName))
+    }
     @State var isAddingPart = false
     @State var showNameValidationRules = false
     @State var newPartName = "New project part"

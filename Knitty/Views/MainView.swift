@@ -8,9 +8,24 @@
 import SwiftUI
 
 struct MainView: View {
+    @State private var savedProjects: [String] = []
+
     var body: some View {
         NavigationStack {
-            Text("Welcome to Knitty!")
+            if savedProjects.isEmpty {
+                Text("No saved projects yet.")
+                    .navigationTitle("Knitty")
+            } else {
+                List(savedProjects, id: \.self) { projectName in
+                    NavigationLink(projectName) {
+                        ProjectView(projectName: projectName)
+                    }
+                }
+                .navigationTitle("Knitty")
+            }
+        }
+        .onAppear {
+            savedProjects = ProjectViewModel.savedProjectNames()
         }
     }
 }

@@ -30,8 +30,8 @@ import Foundation
     }
     var currentRow: Row?
     
-    init() {
-        let defaultProjectName = UserDefaults.standard.string(forKey: "projectName") ?? "banana-socks"
+    init(projectName: String? = nil) {
+        let defaultProjectName = projectName ?? UserDefaults.standard.string(forKey: "projectName") ?? "banana-socks"
         self.project = ProjectViewModel.loadProject(projectName: defaultProjectName)
         self.projectName = defaultProjectName
         let partIndex = UserDefaults.standard.object(forKey: "currentPartIndex") as? Int
@@ -108,6 +108,15 @@ import Foundation
     
     static let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
     
+    static func savedProjectNames() -> [String] {
+        guard let files = try? FileManager.default.contentsOfDirectory(at: documentsURL, includingPropertiesForKeys: nil) else {
+            return []
+        }
+        return files
+            .filter { $0.pathExtension == "json" }
+            .map { $0.deletingPathExtension().lastPathComponent }
+    }
+
     static func loadProject(projectName: String) -> Project {
         do {
             let projectFileURL = ProjectViewModel.documentsURL.appendingPathComponent(projectName + ".json")
