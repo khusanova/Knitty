@@ -46,5 +46,15 @@ import Foundation
     func getProjectPartNames() -> [String] {
         project.projectParts.map { $0.name }
     }
-    
+
+    func makeKnittingViewModel(partIndex: Int) -> KnittingViewModel {
+        KnittingViewModel(
+            project: project,
+            partIndex: partIndex,
+            projectStorage: projectStorage,
+            onProjectChange: { [weak self] updated in
+                self?.project = updated
+            }
+        )
+    }
 }

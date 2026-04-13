@@ -10,7 +10,7 @@ import SwiftUI
 
 
 struct KnittingView: View {
-    var viewModel: ProjectViewModel
+    var viewModel: KnittingViewModel
     var currentPosition: (partIndex: Int, rowNumber: Int) {
         viewModel.currentPosition ?? (0, 0)
     }
@@ -38,13 +38,7 @@ struct KnittingView: View {
         else {
             Text("Congratulations! You've completed this project part!")
         }
-        Button("Go back to project") {
-            if viewModel.saveProject() {
-                viewModel.updateCurrentProjectPart()
-                viewModel.currentPosition = nil
-            }
-        }
-        }
+    }
 }
 
 #Preview {
