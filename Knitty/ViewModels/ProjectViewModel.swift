@@ -8,6 +8,7 @@
 import Foundation
 
 @Observable class ProjectViewModel {
+    let projectStorage = ProjectStorage()
     var project: Project
     var projectName: String {
         didSet {
@@ -31,9 +32,15 @@ import Foundation
     var currentRow: Row?
     
     init(projectName: String? = nil) {
-        let defaultProjectName = projectName ?? UserDefaults.standard.string(forKey: "projectName") ?? "banana-socks"
-        self.project = ProjectViewModel.loadProject(projectName: defaultProjectName)
-        self.projectName = defaultProjectName
+        let projectName = projectName ?? UserDefaults.standard.string(forKey: "projectName") ?? "banana-socks"
+        do {
+            self.project = try projectStorage.loadProject(name: projectName)
+            self.projectName = projectName
+        }
+        catch {
+            self.project = Project.bananaSocks
+            self.projectName = "banana-socks"
+        }
         let partIndex = UserDefaults.standard.object(forKey: "currentPartIndex") as? Int
         let rowNumber = UserDefaults.standard.object(forKey: "currentRowNumber") as? Int
         if let partIndex, let rowNumber {
@@ -46,7 +53,12 @@ import Foundation
     }
     
     func startKnitting(projectPartIndex: Int) {
-        self.saveProject()
+        do {
+            try projectStorage.saveProject(project: project)
+        }
+        catch {
+            return
+        }
         let isFinished = project.projectParts[projectPartIndex].isFinished
         self.isFinished = isFinished
         if !isFinished {
@@ -92,32 +104,5 @@ import Foundation
         rowNumber += 1
         self.currentRow = currentRow
         self.currentPosition = (partIndex, rowNumber)
-    }
-    
-    func saveProject() -> Bool {
-        let fileURL = ProjectViewModel.documentsURL.appendingPathComponent(self.projectName + ".json")
-        do {
-            let projectData = try JSONEncoder().encode(self.project)
-            try projectData.write(to: fileURL)
-            return true
-        }
-        catch {
-            return false
-        }
-    }
-    
-    static let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
-
-    static func loadProject(projectName: String) -> Project {
-        do {
-            let projectFileURL = ProjectViewModel.documentsURL.appendingPathComponent(projectName + ".json")
-            guard let projectData = try? Data(contentsOf: projectFileURL) else {
-                throw DataError.fileNotFound
-            }
-            return try JSONDecoder().decode(Project.self, from: projectData)
-        }
-        catch {
-            return Project.bananaSocks
-        }
     }
 }
