@@ -8,7 +8,10 @@
 import SwiftUI
 
 struct MainView: View {
-    @State private var savedProjects: [String] = []
+    let projectStorage = ProjectStorage()
+    var savedProjects: [String] {
+        projectStorage.savedProjectNames
+    }
 
     var body: some View {
         NavigationStack {
@@ -23,9 +26,6 @@ struct MainView: View {
                 }
                 .navigationTitle("Knitty")
             }
-        }
-        .onAppear {
-            savedProjects = MainMenuViewModel.savedProjectNames()
         }
     }
 }
