@@ -8,20 +8,17 @@
 import SwiftUI
 
 struct MainView: View {
-    let projectStorage = ProjectStorage()
-    var savedProjects: [String] {
-        projectStorage.savedProjectNames
-    }
+    @Environment(ProjectStore.self) private var store
 
     var body: some View {
         NavigationStack {
-            if savedProjects.isEmpty {
+            if store.entries.isEmpty {
                 Text("No saved projects yet.")
                     .navigationTitle("Knitty")
             } else {
-                List(savedProjects, id: \.self) { projectName in
-                    NavigationLink(projectName) {
-                        ProjectView(projectName: projectName)
+                List(store.entries) { entry in
+                    NavigationLink(entry.name) {
+                        ProjectView(projectID: entry.id, store: store)
                     }
                 }
                 .navigationTitle("Knitty")
@@ -32,4 +29,5 @@ struct MainView: View {
 
 #Preview {
     MainView()
+        .environment(ProjectStore())
 }

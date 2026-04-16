@@ -9,9 +9,12 @@ import SwiftUI
 
 @main
 struct KnittyApp: App {
+    @State private var store = ProjectStore()
+
     var body: some Scene {
         WindowGroup {
             MainView()
+                .environment(store)
         }
     }
 }

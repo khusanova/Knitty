@@ -16,8 +16,8 @@ struct ProjectView: View {
     @State var newPartName = "New project part"
     @FocusState private var isTextFieldFocused: Bool
 
-    init(projectName: String? = nil) {
-        self._viewModel = State(initialValue: ProjectViewModel(projectName: projectName))
+    init(projectID: UUID? = nil, store: ProjectStore) {
+        self._viewModel = State(initialValue: ProjectViewModel(projectID: projectID, store: store))
     }
 
     var isValidName: Bool {
@@ -61,5 +61,5 @@ struct ProjectView: View {
 }
 
 #Preview {
-    ProjectView()
+    ProjectView(store: ProjectStore())
 }

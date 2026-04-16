@@ -8,33 +8,23 @@
 import Foundation
 
 @Observable class ProjectViewModel {
-    let projectStorage: ProjectStorage
+    let store: ProjectStore
     var project: Project
-    var projectName: String {
-        didSet {
-            UserDefaults.standard.set(projectName, forKey: "projectName")
-            do {
-                self.project = try projectStorage.loadProject(name: projectName)
-            } catch {
-                self.project = Project.bananaSocks
-            }
-        }
-    }
 
-    init(projectName: String? = nil, projectStorage: ProjectStorage = ProjectStorage()) {
-        self.projectStorage = projectStorage
-        let name = projectName ?? UserDefaults.standard.string(forKey: "projectName") ?? "banana-socks"
-        do {
-            self.project = try projectStorage.loadProject(name: name)
-            self.projectName = name
-        } catch {
+    init(projectID: UUID? = nil, store: ProjectStore) {
+        self.store = store
+        let id = projectID
+            ?? UserDefaults.standard.string(forKey: "lastProjectID").flatMap(UUID.init)
+        if let id, let loaded = try? store.loadProject(id: id) {
+            self.project = loaded
+        } else {
             self.project = Project.bananaSocks
-            self.projectName = "banana-socks"
         }
+        UserDefaults.standard.set(self.project.id.uuidString, forKey: "lastProjectID")
     }
 
     func save() {
-        try? projectStorage.saveProject(project: project)
+        try? store.saveProject(project)
     }
 
     func addProjectPart(name: String) {

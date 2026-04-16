@@ -42,5 +42,5 @@ struct KnittingView: View {
 }
 
 #Preview {
-    ProjectView()
+    ProjectView(store: ProjectStore())
 }

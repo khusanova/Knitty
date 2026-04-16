@@ -7,29 +7,48 @@
 
 import Foundation
 
+struct ProjectIndexEntry: Codable, Identifiable {
+    let id: UUID
+    var name: String
+}
+
+struct ProjectIndex: Codable {
+    var entries: [ProjectIndexEntry]
+}
+
 class ProjectStorage {
     static let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
-    
-    var savedProjectNames: [String] {
-        guard let files = try? FileManager.default.contentsOfDirectory(at: ProjectStorage.documentsURL, includingPropertiesForKeys: nil) else {
-            return []
-        }
-        return files
-            .filter { $0.pathExtension == "json" }
-            .map { $0.deletingPathExtension().lastPathComponent }
+    static let indexFileName = "index.json"
+
+    private func projectURL(for id: UUID) -> URL {
+        Self.documentsURL.appendingPathComponent(id.uuidString + ".json")
     }
-    
-    func loadProject(name: String) throws -> Project {
-        let projectFileURL = ProjectStorage.documentsURL.appendingPathComponent(name + ".json")
-        guard let projectData = try? Data(contentsOf: projectFileURL) else {
+
+    private var indexURL: URL {
+        Self.documentsURL.appendingPathComponent(Self.indexFileName)
+    }
+
+    func loadProject(id: UUID) throws -> Project {
+        guard let data = try? Data(contentsOf: projectURL(for: id)) else {
             throw DataError.fileNotFound
         }
-        return try JSONDecoder().decode(Project.self, from: projectData)
+        return try JSONDecoder().decode(Project.self, from: data)
     }
-    
-    func saveProject(project: Project) throws {
-        let fileURL = ProjectStorage.documentsURL.appendingPathComponent(project.name + ".json")
-        let projectData = try JSONEncoder().encode(project)
-        try projectData.write(to: fileURL)
+
+    func saveProject(_ project: Project) throws {
+        let data = try JSONEncoder().encode(project)
+        try data.write(to: projectURL(for: project.id))
+    }
+
+    func loadIndex() throws -> ProjectIndex {
+        guard let data = try? Data(contentsOf: indexURL) else {
+            return ProjectIndex(entries: [])
+        }
+        return try JSONDecoder().decode(ProjectIndex.self, from: data)
+    }
+
+    func saveIndex(_ index: ProjectIndex) throws {
+        let data = try JSONEncoder().encode(index)
+        try data.write(to: indexURL)
     }
 }
