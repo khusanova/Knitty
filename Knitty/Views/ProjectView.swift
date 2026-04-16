@@ -26,11 +26,12 @@ struct ProjectView: View {
 
     var body: some View {
         VStack {
-            ForEach(Array(viewModel.getProjectPartNames().enumerated()), id: \.offset) { index, name in
+            List(Array(viewModel.getProjectPartNames().enumerated()), id: \.offset) { index, name in
                 NavigationLink(name) {
                     KnittingView(viewModel: viewModel.makeKnittingViewModel(partIndex: index))
                 }
             }
+            .navigationTitle("Project parts")
             Button("Add project part") {
                 isAddingPart = true
                 isTextFieldFocused = true
