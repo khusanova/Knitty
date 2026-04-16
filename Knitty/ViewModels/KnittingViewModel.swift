@@ -11,17 +11,7 @@ import Foundation
     let projectVM: ProjectViewModel
     let partIndex: Int
     var isFinished: Bool
-    var currentPosition: (partIndex: Int, rowNumber: Int)? {
-        didSet {
-            if let position = currentPosition {
-                UserDefaults.standard.set(position.partIndex, forKey: "currentPartIndex")
-                UserDefaults.standard.set(position.rowNumber, forKey: "currentRowNumber")
-            } else {
-                UserDefaults.standard.removeObject(forKey: "currentPartIndex")
-                UserDefaults.standard.removeObject(forKey: "currentRowNumber")
-            }
-        }
-    }
+    var currentPosition: (partIndex: Int, rowNumber: Int)?
     var currentRow: Row?
 
     private var project: Project {
@@ -47,7 +37,8 @@ import Foundation
     func unravel() {
         guard var (partIndex, rowNumber) = currentPosition, rowNumber > 0 else { return }
         guard let row = project.getRow(indexRow: rowNumber - 1, indexPart: partIndex) else { return }
-        rowNumber -= 1
+        rowNumber
+        -= 1
         self.currentRow = row
         self.currentPosition = (partIndex, rowNumber)
         commitProgress()
@@ -71,8 +62,3 @@ import Foundation
         projectVM.save()
     }
 }
-//let partIndex = UserDefaults.standard.object(forKey: "currentPartIndex") as? Int
-//let rowNumber = UserDefaults.standard.object(forKey: "currentRowNumber") as? Int
-//if let partIndex, let rowNumber {
-//    self.currentPosition = (partIndex, rowNumber)
-//}
