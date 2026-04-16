@@ -8,7 +8,7 @@
 import Foundation
 
 @Observable class ProjectViewModel {
-    let projectStorage = ProjectStorage()
+    let projectStorage: ProjectStorage
     var project: Project
     var projectName: String {
         didSet {
@@ -21,40 +21,32 @@ import Foundation
         }
     }
 
-    init(projectName: String? = nil) {
+    init(projectName: String? = nil, projectStorage: ProjectStorage = ProjectStorage()) {
+        self.projectStorage = projectStorage
         let name = projectName ?? UserDefaults.standard.string(forKey: "projectName") ?? "banana-socks"
-        let storage = ProjectStorage()
         do {
-            self.project = try storage.loadProject(name: name)
+            self.project = try projectStorage.loadProject(name: name)
             self.projectName = name
         } catch {
             self.project = Project.bananaSocks
             self.projectName = "banana-socks"
         }
     }
-    
-    func addProjectPart(name: String) {
-        self.project.addProjectPart(name: name)
-        do {
-            try projectStorage.saveProject(project: project)
-        }
-        catch {
-            return
-        }
+
+    func save() {
+        try? projectStorage.saveProject(project: project)
     }
-    
+
+    func addProjectPart(name: String) {
+        project.addProjectPart(name: name)
+        save()
+    }
+
     func getProjectPartNames() -> [String] {
         project.projectParts.map { $0.name }
     }
 
     func makeKnittingViewModel(partIndex: Int) -> KnittingViewModel {
-        KnittingViewModel(
-            project: project,
-            partIndex: partIndex,
-            projectStorage: projectStorage,
-            onProjectChange: { [weak self] updated in
-                self?.project = updated
-            }
-        )
+        KnittingViewModel(projectVM: self, partIndex: partIndex)
     }
 }

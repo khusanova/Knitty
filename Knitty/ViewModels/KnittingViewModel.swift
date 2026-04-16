@@ -8,7 +8,7 @@
 import Foundation
 
 @Observable class KnittingViewModel {
-    var project: Project
+    let projectVM: ProjectViewModel
     let partIndex: Int
     var isFinished: Bool
     var currentPosition: (partIndex: Int, rowNumber: Int)? {
@@ -23,27 +23,25 @@ import Foundation
         }
     }
     var currentRow: Row?
-    let projectStorage: ProjectStorage
-    let onProjectChange: (Project) -> Void
 
-    init(project: Project,
-         partIndex: Int,
-         projectStorage: ProjectStorage,
-         onProjectChange: @escaping (Project) -> Void) {
-        self.project = project
+    private var project: Project {
+        get { projectVM.project }
+        set { projectVM.project = newValue }
+    }
+
+    init(projectVM: ProjectViewModel, partIndex: Int) {
+        self.projectVM = projectVM
         self.partIndex = partIndex
-        self.projectStorage = projectStorage
-        self.onProjectChange = onProjectChange
 
-        let part = project.projectParts[partIndex]
+        let part = projectVM.project.projectParts[partIndex]
         self.isFinished = part.isFinished
         if !part.isFinished {
             let rowNumber = part.rowCounter
             self.currentPosition = (partIndex, rowNumber)
-            self.currentRow = project.getRow(indexRow: rowNumber, indexPart: partIndex)
+            self.currentRow = projectVM.project.getRow(indexRow: rowNumber, indexPart: partIndex)
                 ?? Row(instructions: "This row does not exist.")
         }
-        try? projectStorage.saveProject(project: project)
+        projectVM.save()
     }
 
     func unravel() {
@@ -70,8 +68,7 @@ import Foundation
     private func commitProgress() {
         guard let (partIndex, rowNumber) = currentPosition else { return }
         project.addProgressOnProjectPart(at: rowNumber, for: partIndex)
-        try? projectStorage.saveProject(project: project)
-        onProjectChange(project)
+        projectVM.save()
     }
 }
 //let partIndex = UserDefaults.standard.object(forKey: "currentPartIndex") as? Int
