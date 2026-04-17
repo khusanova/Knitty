@@ -27,7 +27,7 @@ struct Project: Codable, Identifiable{
     var projectParts: [ProjectPart]
     var patterns: [UUID: Pattern]
     var currentProjectPart: Int?
-    var description: String?
+    var notes: String?
     var projectURL: URL?
     
     init(name: String, projectParts: [(String, [Pattern])], description: String? = nil, projectURL: URL? = nil){
