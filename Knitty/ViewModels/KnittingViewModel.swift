@@ -10,9 +10,7 @@ import Foundation
 @Observable class KnittingViewModel {
     let projectVM: ProjectViewModel
     let partIndex: Int
-    var isFinished: Bool
-    var currentPosition: (partIndex: Int, rowNumber: Int)?
-    var currentRow: Row?
+    var errorMessage: String?
 
     private var project: Project {
         get { projectVM.project }
@@ -22,43 +20,32 @@ import Foundation
     init(projectVM: ProjectViewModel, partIndex: Int) {
         self.projectVM = projectVM
         self.partIndex = partIndex
-
-        let part = projectVM.project.projectParts[partIndex]
-        self.isFinished = part.isFinished
-        if !part.isFinished {
-            let rowNumber = part.rowCounter
-            self.currentPosition = (partIndex, rowNumber)
-            self.currentRow = projectVM.project.getRow(indexRow: rowNumber, indexPart: partIndex)
-                ?? Row(instructions: "This row does not exist.")
-        }
         projectVM.save()
     }
 
     func unravel() {
-        guard var (partIndex, rowNumber) = currentPosition, rowNumber > 0 else { return }
-        guard let row = project.getRow(indexRow: rowNumber - 1, indexPart: partIndex) else { return }
-        rowNumber
-        -= 1
-        self.currentRow = row
-        self.currentPosition = (partIndex, rowNumber)
-        commitProgress()
+        do {
+            try project.unravel(partIndex: self.partIndex)
+        } catch ProjectProgressError.partIndexOutOfRange {
+            self.errorMessage = "Something went wrong. This project part should not exist."
+        } catch ProjectProgressError.rowIndexOutOfRange {
+            self.errorMessage = "You have not yet started knitting."
+        } catch {
+            self.errorMessage = "Something went wrong."
+        }
+        projectVM.save()
     }
 
     func knitRow() {
-        guard var (partIndex, rowNumber) = currentPosition else { return }
-        if rowNumber + 1 == project.totalRowCount(of: partIndex) {
-            self.isFinished = true
+        do {
+            try project.knit(partIndex: self.partIndex)
+        } catch ProjectProgressError.partIndexOutOfRange {
+            self.errorMessage = "Something went wrong. This project part should not exist."
+        } catch ProjectProgressError.rowIndexOutOfRange {
+            self.errorMessage = "You have not yet started knitting."
+        } catch {
+            self.errorMessage = "Something went wrong."
         }
-        guard let row = project.getRow(indexRow: rowNumber + 1, indexPart: partIndex) else { return }
-        rowNumber += 1
-        self.currentRow = row
-        self.currentPosition = (partIndex, rowNumber)
-        commitProgress()
-    }
-
-    private func commitProgress() {
-        guard let (partIndex, rowNumber) = currentPosition else { return }
-        project.addProgressOnProjectPart(at: rowNumber, for: partIndex)
         projectVM.save()
     }
 }

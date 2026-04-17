@@ -89,7 +89,7 @@ struct Project: Codable, Identifiable{
             throw ProjectProgressError.partIndexOutOfRange
         }
         guard projectParts[partIndex].rowCounter < self.totalRowCount(of: partIndex) else {
-            throw ProjectProgressError.endOfProjectPart
+            throw ProjectProgressError.rowIndexOutOfRange
         }
         projectParts[partIndex].rowCounter += 1
         if projectParts[partIndex].rowCounter == self.totalRowCount(of: partIndex) {
@@ -102,7 +102,7 @@ struct Project: Codable, Identifiable{
             throw ProjectProgressError.partIndexOutOfRange
         }
         guard projectParts[partIndex].rowCounter > 0 else {
-            throw ProjectProgressError.noRowsToUnravel
+            throw ProjectProgressError.rowIndexOutOfRange
         }
         projectParts[partIndex].rowCounter -= 1
         projectParts[partIndex].isFinished = false

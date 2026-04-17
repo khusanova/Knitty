@@ -18,6 +18,5 @@ enum SaveError: Error {
 
 enum ProjectProgressError: Error {
     case partIndexOutOfRange
-    case endOfProjectPart
-    case noRowsToUnravel
+    case rowIndexOutOfRange
 }
