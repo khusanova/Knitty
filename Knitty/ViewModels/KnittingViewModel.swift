@@ -32,11 +32,11 @@ import Foundation
             try project.unravel(partIndex: self.partIndex)
             projectVM.save()
         } catch ProjectProgressError.partIndexOutOfRange {
-            self.errorMessage = "Something went wrong. This project part should not exist."
+            self.errorMessage = "The project part does not exists."
         } catch ProjectProgressError.rowIndexOutOfRange {
             self.errorMessage = "You have not yet started knitting."
         } catch {
-            self.errorMessage = "Something went wrong."
+            self.errorMessage = "Failed to change row counter state."
         }
     }
 
@@ -45,11 +45,11 @@ import Foundation
             try project.knit(partIndex: self.partIndex)
             projectVM.save()
         } catch ProjectProgressError.partIndexOutOfRange {
-            self.errorMessage = "Something went wrong. This project part should not exist."
+            self.errorMessage = "The project part does not exists."
         } catch ProjectProgressError.rowIndexOutOfRange {
-            self.errorMessage = "You have not yet started knitting."
+            self.errorMessage = "You reached the end of this project part."
         } catch {
-            self.errorMessage = "Something went wrong."
+            self.errorMessage = "Failed to change row counter state."
         }
     }
 }
