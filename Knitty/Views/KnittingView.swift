@@ -23,11 +23,15 @@ struct KnittingView: View {
                     }
                     RowView(row: currentRow)
                     HStack {
-                        Button("Unravel"){
-                            viewModel.unravel()
+                        if viewModel.displayUnravelButton {
+                            Button("Unravel"){
+                                viewModel.unravel()
+                            }
                         }
-                        Button("Next Row"){
-                            viewModel.knitRow()
+                        if viewModel.displayKnitButton {
+                            Button("Next Row"){
+                                viewModel.knitRow()
+                            }
                         }
                     }
                 }
