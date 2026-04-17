@@ -84,19 +84,27 @@ struct Project: Codable, Identifiable{
         self.projectParts.append(ProjectPart(name: name, patterns: []))
     }
     
-    mutating func addProgressOnProjectPart(at rowIndex: Int, for projectPartIndex: Int) {
-        guard projectPartIndex < projectParts.count else {
-            return
+    mutating func knit(partIndex: Int) throws {
+        guard projectParts.indices.contains(partIndex) else {
+            throw ProjectProgressError.partIndexOutOfRange
         }
-        guard projectPartIndex >= 0 else {
-            return
+        guard projectParts[partIndex].rowCounter < self.totalRowCount(of: partIndex) else {
+            throw ProjectProgressError.endOfProjectPart
         }
-        guard projectPartIndex <= totalRowCount(of: projectPartIndex) else{
-            return
+        projectParts[partIndex].rowCounter += 1
+        if projectParts[partIndex].rowCounter == self.totalRowCount(of: partIndex) {
+            projectParts[partIndex].isFinished = true
         }
-        projectParts[projectPartIndex].rowCounter = rowIndex
-        if rowIndex == totalRowCount(of: projectPartIndex) {
-            projectParts[projectPartIndex].isFinished = true
+    }
+
+    mutating func unravel(partIndex: Int) throws {
+        guard projectParts.indices.contains(partIndex) else {
+            throw ProjectProgressError.partIndexOutOfRange
         }
+        guard projectParts[partIndex].rowCounter > 0 else {
+            throw ProjectProgressError.noRowsToUnravel
+        }
+        projectParts[partIndex].rowCounter -= 1
+        projectParts[partIndex].isFinished = false
     }
 }

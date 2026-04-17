@@ -15,3 +15,9 @@ enum SaveError: Error {
     case encodingError
     case writeError
 }
+
+enum ProjectProgressError: Error {
+    case partIndexOutOfRange
+    case endOfProjectPart
+    case noRowsToUnravel
+}
