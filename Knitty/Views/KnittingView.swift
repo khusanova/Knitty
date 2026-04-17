@@ -11,15 +11,12 @@ import SwiftUI
 
 struct KnittingView: View {
     var viewModel: KnittingViewModel
-    var currentPosition: (partIndex: Int, rowNumber: Int) {
-        viewModel.currentPosition ?? (0, 0)
-    }
     var currentRow: Row { viewModel.currentRow ?? Row(instructions: "This row does not exist.")}
     var body: some View {
         if !viewModel.isFinished {
             VStack {
                 Text("🧶 Knit!!!").font(.largeTitle)
-                Text("You are at the row \(currentPosition.rowNumber+1)")
+                Text("You are at the row \(viewModel.rowCounter+1)")
                 HStack{
                     Text("Follow this pattern: ")
                 }

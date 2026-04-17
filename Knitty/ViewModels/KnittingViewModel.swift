@@ -11,6 +11,10 @@ import Foundation
     let projectVM: ProjectViewModel
     let partIndex: Int
     var errorMessage: String?
+    var rowCounter: Int  { project.projectParts[partIndex].rowCounter }
+    var isFinished: Bool { project.projectParts[partIndex].isFinished }
+    var currentRow: Row? { project.getRow(indexRow: rowCounter, indexPart: partIndex)}
+    
 
     private var project: Project {
         get { projectVM.project }
@@ -26,6 +30,7 @@ import Foundation
     func unravel() {
         do {
             try project.unravel(partIndex: self.partIndex)
+            projectVM.save()
         } catch ProjectProgressError.partIndexOutOfRange {
             self.errorMessage = "Something went wrong. This project part should not exist."
         } catch ProjectProgressError.rowIndexOutOfRange {
@@ -33,12 +38,12 @@ import Foundation
         } catch {
             self.errorMessage = "Something went wrong."
         }
-        projectVM.save()
     }
 
     func knitRow() {
         do {
             try project.knit(partIndex: self.partIndex)
+            projectVM.save()
         } catch ProjectProgressError.partIndexOutOfRange {
             self.errorMessage = "Something went wrong. This project part should not exist."
         } catch ProjectProgressError.rowIndexOutOfRange {
@@ -46,6 +51,5 @@ import Foundation
         } catch {
             self.errorMessage = "Something went wrong."
         }
-        projectVM.save()
     }
 }
