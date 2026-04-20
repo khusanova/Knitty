@@ -13,75 +13,75 @@ struct Project: Codable, Identifiable{
     struct ProjectPart: Codable, Identifiable{
         var id = UUID()
         var name: String
-        var patternOrder: [UUID]
+        var subPatternOrder: [UUID]
         var rowCounter: Int
         var isFinished: Bool
-        
-        init(name: String, patterns: [Pattern]){
+
+        init(name: String, subPatterns: [SubPattern]){
             self.name = name
-            self.patternOrder = patterns.map { $0.id }
+            self.subPatternOrder = subPatterns.map { $0.id }
             self.rowCounter = 0
             self.isFinished = false
         }
     }
     var projectParts: [ProjectPart]
-    var patterns: [UUID: Pattern]
+    var subPatterns: [UUID: SubPattern]
     var currentProjectPart: Int?
     var notes: String?
     var projectURL: URL?
-    
-    init(name: String, projectParts: [(String, [Pattern])], description: String? = nil, projectURL: URL? = nil){
+
+    init(name: String, projectParts: [(String, [SubPattern])], notes: String? = nil, projectURL: URL? = nil){
         self.name = name
         self.projectParts = []
-        self.patterns = [:]
-        for (partName, partPatterns) in projectParts{
-            self.projectParts.append(ProjectPart(name: partName, patterns: partPatterns))
-            for pattern in partPatterns{
-                self.patterns[pattern.id] = pattern
+        self.subPatterns = [:]
+        for (partName, partSubPatterns) in projectParts{
+            self.projectParts.append(ProjectPart(name: partName, subPatterns: partSubPatterns))
+            for subPattern in partSubPatterns{
+                self.subPatterns[subPattern.id] = subPattern
             }
         }
-        self.description = description
+        self.notes = notes
         self.projectURL = projectURL
     }
     
     func totalRowCount(of projectPartIndex: Int) -> Int {
-        projectParts[projectPartIndex].patternOrder.compactMap { patterns[$0]?.count ?? 0}.reduce(0,+)
+        projectParts[projectPartIndex].subPatternOrder.compactMap { subPatterns[$0]?.count ?? 0}.reduce(0,+)
     }
-    
-    func getPattern(indexRow: Int, indexPart: Int) -> Pattern? {
+
+    func getSubPattern(indexRow: Int, indexPart: Int) -> SubPattern? {
         let projectPart = projectParts[indexPart]
         var indexRow = indexRow
-        var patternIDIter = projectPart.patternOrder.makeIterator()
+        var subPatternIDIter = projectPart.subPatternOrder.makeIterator()
         guard indexRow >= 0 else {
             return nil
         }
         while indexRow >= 0 {
-            guard let patternID = patternIDIter.next() else {
+            guard let subPatternID = subPatternIDIter.next() else {
                 return nil
             }
-            guard var pattern = patterns[patternID] else {
+            guard var subPattern = subPatterns[subPatternID] else {
                 return nil
             }
-            if indexRow < pattern.count {
-                pattern.rowCounter = indexRow
-                return pattern//.getRow(at: indexRow)
+            if indexRow < subPattern.count {
+                subPattern.rowCounter = indexRow
+                return subPattern
             }
             else {
-                indexRow -= pattern.count
+                indexRow -= subPattern.count
             }
         }
         return nil
     }
-    
+
     func getRow(indexRow: Int, indexPart: Int) -> Row? {
-        guard let pattern = getPattern(indexRow: indexRow, indexPart: indexPart) else {
+        guard let subPattern = getSubPattern(indexRow: indexRow, indexPart: indexPart) else {
             return nil
         }
-        return pattern.getCurrentRow()
+        return subPattern.getCurrentRow()
     }
-    
+
     mutating func addProjectPart(name: String) {
-        self.projectParts.append(ProjectPart(name: name, patterns: []))
+        self.projectParts.append(ProjectPart(name: name, subPatterns: []))
     }
     
     mutating func knit(partIndex: Int) throws {

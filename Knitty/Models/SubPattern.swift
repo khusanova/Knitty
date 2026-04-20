@@ -1,5 +1,5 @@
 //
-//  Pattern.swift
+//  SubPattern.swift
 //  Knitty
 //
 //  Created by Y. Khusanova on 20.01.26.
@@ -12,7 +12,7 @@ struct Row: Identifiable, Codable {
     var instructions: String
 }
 
-struct Pattern: Identifiable, Codable {
+struct SubPattern: Identifiable, Codable {
     var id = UUID()
     var rows: [UUID: Row]
     var rowOrder: [UUID]
@@ -22,7 +22,7 @@ struct Pattern: Identifiable, Codable {
     var count: Int {
         rowOrder.count
     }
-    
+
     init(rows: [Row], name: String? = nil, details: String? = nil) {
         self.rowOrder = rows.map { $0.id }
         self.rows = Dictionary(rows.map { ($0.id, $0) },
@@ -30,14 +30,14 @@ struct Pattern: Identifiable, Codable {
         self.name = name
         self.details = details
     }
-    
+
     init(baseRow: Row, length: Int, name: String? = nil, details: String? = nil) {
         self.rows = [baseRow.id: baseRow]
         self.rowOrder = (0..<length).map { _ in baseRow.id}
         self.name = name
         self.details = details
     }
-    
+
     func getRow(at index: Int) -> Row? {
         guard index >= 0 && index < count else {
             return nil
@@ -47,32 +47,32 @@ struct Pattern: Identifiable, Codable {
         }
         return row
     }
-    
+
     func getCurrentRow() -> Row? {
         guard let index = rowCounter else {
             return nil
         }
         return getRow(at: index)
     }
-    
+
     mutating func updateRow(at index: Int, newRow: Row) {
         rows[newRow.id] = newRow
         rowOrder[index] = newRow.id
     }
-    
+
     mutating func appendRow(newRow: Row) {
         rows[newRow.id] = newRow
         rowOrder.append(newRow.id)
     }
-    
-    mutating func appendPattern(_ pattern: Pattern) {
-        self.rows.merge(pattern.rows) { existing, _ in existing }
-        self.rowOrder += pattern.rowOrder
+
+    mutating func appendSubPattern(_ subPattern: SubPattern) {
+        self.rows.merge(subPattern.rows) { existing, _ in existing }
+        self.rowOrder += subPattern.rowOrder
     }
-    
-    static func + (lhs: Pattern, rhs: Pattern) -> Pattern {
+
+    static func + (lhs: SubPattern, rhs: SubPattern) -> SubPattern {
         var result = lhs
-        result.appendPattern(rhs)
+        result.appendSubPattern(rhs)
         return result
     }
 }
