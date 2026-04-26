@@ -11,17 +11,9 @@ import SwiftUI
 /// if user already works on the project, then the last project part user worked on is displayed as knitting view
 struct ProjectView: View {
     @State var viewModel: ProjectViewModel
-    @State var isAddingPart = false
-    @State var showNameValidationRules = false
-    @State var newPartName = "New project part"
-    @FocusState private var isTextFieldFocused: Bool
 
     init(projectID: UUID? = nil, store: ProjectStore) {
         self._viewModel = State(initialValue: ProjectViewModel(projectID: projectID, store: store))
-    }
-
-    var isValidName: Bool {
-        !newPartName.trimmingCharacters(in: .whitespaces).isEmpty && !viewModel.getProjectPartNames().contains(newPartName)
     }
 
     var body: some View {
@@ -32,30 +24,13 @@ struct ProjectView: View {
                 }
             }
             .navigationTitle("Project parts")
-            Button("Add project part") {
-                isAddingPart = true
-                isTextFieldFocused = true
-            }
-            if isAddingPart {
-                TextField("Part name", text: $newPartName)
-                    .focused($isTextFieldFocused)
-                    .onSubmit {
-                        guard isValidName else {
-                            showNameValidationRules = true
-                            if viewModel.getProjectPartNames().contains(newPartName) {
-                                newPartName += " (2)"
-                                isTextFieldFocused = true
-                            }
-                            return
-                        }
-                        viewModel.addProjectPart(name: newPartName)
-                        isAddingPart = false
-                        newPartName = "New project part"
-                    }
-                if showNameValidationRules {
-                    Text("Name must be unique and non-empty.")
-                }
-            }
+            InlineNameEntry(
+                buttonLabel: "Add project part",
+                placeholder: "Part name",
+                defaultName: "New project part",
+                existingNames: viewModel.getProjectPartNames(),
+                onSubmit: { viewModel.addProjectPart(name: $0) }
+            )
         }
     }
 }
