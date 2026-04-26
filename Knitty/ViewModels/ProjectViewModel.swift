@@ -60,6 +60,21 @@ import Foundation
         save()
     }
 
+    func setSubPatternRepeatCount(
+        toPartIndex partIndex: Int,
+        atOrderIndex startIndex: Int,
+        oldCount: Int,
+        newCount: Int
+    ) {
+        project.setSubPatternRepeatCount(
+            toPartIndex: partIndex,
+            atOrderIndex: startIndex,
+            oldCount: oldCount,
+            newCount: newCount
+        )
+        save()
+    }
+
     func getProjectPartNames() -> [String] {
         project.projectParts.map { $0.name }
     }

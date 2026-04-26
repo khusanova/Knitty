@@ -14,6 +14,7 @@ struct EditorView: View {
     private struct DisplayGroup: Identifiable {
         let id: String
         let subPatternID: UUID?
+        let startIndex: Int
         let repeatCount: Int
         let rows: [Row]
     }
@@ -21,10 +22,11 @@ struct EditorView: View {
     private var displayGroups: [DisplayGroup] {
         let order = viewModel.project.projectParts[partIndex].subPatternOrder
         guard !order.isEmpty else {
-            return [DisplayGroup(id: "placeholder", subPatternID: nil, repeatCount: 1, rows: [])]
+            return [DisplayGroup(id: "placeholder", subPatternID: nil, startIndex: 0, repeatCount: 1, rows: [])]
         }
         var groups: [DisplayGroup] = []
         var currentID: UUID? = nil
+        var currentStart = 0
         var currentCount = 0
         var groupIndex = 0
         let flush = {
@@ -34,18 +36,20 @@ struct EditorView: View {
                 groups.append(DisplayGroup(
                     id: "\(id.uuidString)-\(groupIndex)",
                     subPatternID: id,
+                    startIndex: currentStart,
                     repeatCount: currentCount,
                     rows: rowsForID
                 ))
                 groupIndex += 1
             }
         }
-        for id in order {
+        for (i, id) in order.enumerated() {
             if id == currentID {
                 currentCount += 1
             } else {
                 flush()
                 currentID = id
+                currentStart = i
                 currentCount = 1
             }
         }
@@ -65,6 +69,16 @@ struct EditorView: View {
                                 viewModel.appendRow(toSubPatternID: id, instructions: instructions)
                             } else {
                                 viewModel.addRowToNewSubPattern(toPartIndex: partIndex, instructions: instructions)
+                            }
+                        },
+                        onChangeRepeatCount: group.subPatternID.map { _ in
+                            { newCount in
+                                viewModel.setSubPatternRepeatCount(
+                                    toPartIndex: partIndex,
+                                    atOrderIndex: group.startIndex,
+                                    oldCount: group.repeatCount,
+                                    newCount: newCount
+                                )
                             }
                         }
                     )
@@ -86,6 +100,7 @@ private struct SubPatternBlock: View {
     let repeatCount: Int
     let rows: [Row]
     let onAddRow: (String) -> Void
+    let onChangeRepeatCount: ((Int) -> Void)?
 
     @State private var isAddingRow = false
     @State private var newInstructions = ""
@@ -118,9 +133,22 @@ private struct SubPatternBlock: View {
             Text("]")
                 .font(.system(size: 100, weight: .ultraLight))
                 .foregroundStyle(.primary)
-            Text("× \(repeatCount)")
-                .font(.title2)
-                .foregroundStyle(.secondary)
+            VStack(spacing: 4) {
+                Text("× \(repeatCount)")
+                    .font(.title2)
+                    .foregroundStyle(.secondary)
+                if let onChangeRepeatCount {
+                    Stepper(
+                        "",
+                        value: Binding(
+                            get: { repeatCount },
+                            set: { onChangeRepeatCount($0) }
+                        ),
+                        in: 1...99
+                    )
+                    .labelsHidden()
+                }
+            }
         }
     }
 
