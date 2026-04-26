@@ -126,6 +126,20 @@ struct Project: Codable, Identifiable, Hashable {
         let replacement = Array(repeating: id, count: newCount)
         projectParts[partIndex].subPatternOrder.replaceSubrange(startIndex..<endIndex, with: replacement)
     }
+
+    mutating func deleteSubPatternGroup(
+        fromPartIndex partIndex: Int,
+        atOrderIndex startIndex: Int,
+        oldCount: Int
+    ) {
+        guard projectParts.indices.contains(partIndex) else { return }
+        let order = projectParts[partIndex].subPatternOrder
+        let endIndex = startIndex + oldCount
+        guard startIndex >= 0, endIndex <= order.count, oldCount > 0 else { return }
+        let id = order[startIndex]
+        guard order[startIndex..<endIndex].allSatisfy({ $0 == id }) else { return }
+        projectParts[partIndex].subPatternOrder.removeSubrange(startIndex..<endIndex)
+    }
     
     mutating func knit(partIndex: Int) throws {
         guard projectParts.indices.contains(partIndex) else {

@@ -75,6 +75,19 @@ import Foundation
         save()
     }
 
+    func deleteSubPatternGroup(
+        fromPartIndex partIndex: Int,
+        atOrderIndex startIndex: Int,
+        oldCount: Int
+    ) {
+        project.deleteSubPatternGroup(
+            fromPartIndex: partIndex,
+            atOrderIndex: startIndex,
+            oldCount: oldCount
+        )
+        save()
+    }
+
     func getProjectPartNames() -> [String] {
         project.projectParts.map { $0.name }
     }

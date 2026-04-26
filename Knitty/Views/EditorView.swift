@@ -80,6 +80,15 @@ struct EditorView: View {
                                     newCount: newCount
                                 )
                             }
+                        },
+                        onDelete: group.subPatternID.map { _ in
+                            {
+                                viewModel.deleteSubPatternGroup(
+                                    fromPartIndex: partIndex,
+                                    atOrderIndex: group.startIndex,
+                                    oldCount: group.repeatCount
+                                )
+                            }
                         }
                     )
                 }
@@ -101,9 +110,11 @@ private struct SubPatternBlock: View {
     let rows: [Row]
     let onAddRow: (String) -> Void
     let onChangeRepeatCount: ((Int) -> Void)?
+    let onDelete: (() -> Void)?
 
     @State private var isAddingRow = false
     @State private var newInstructions = ""
+    @State private var showDeleteConfirm = false
     @FocusState private var isFocused: Bool
 
     var body: some View {
@@ -148,7 +159,20 @@ private struct SubPatternBlock: View {
                     )
                     .labelsHidden()
                 }
+                if repeatCount == 1, onDelete != nil {
+                    Button(role: .destructive) {
+                        showDeleteConfirm = true
+                    } label: {
+                        Image(systemName: "trash")
+                    }
+                }
             }
+        }
+        .alert("Delete this subpattern?", isPresented: $showDeleteConfirm) {
+            Button("Delete", role: .destructive) { onDelete?() }
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text("This will remove all of its rows.")
         }
     }
 
