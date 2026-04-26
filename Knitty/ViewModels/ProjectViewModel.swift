@@ -11,6 +11,9 @@ import Foundation
     let store: ProjectStore
     var project: Project
 
+    @ObservationIgnored
+    private var knittingViewModelCache: [Int: KnittingViewModel] = [:]
+
     init(projectID: UUID? = nil, store: ProjectStore) {
         self.store = store
         let id = projectID
@@ -39,6 +42,7 @@ import Foundation
 
     func deleteProjectPart(at index: Int) {
         project.deleteProjectPart(at: index)
+        knittingViewModelCache.removeAll()
         save()
     }
 
@@ -93,6 +97,11 @@ import Foundation
     }
 
     func makeKnittingViewModel(partIndex: Int) -> KnittingViewModel {
-        KnittingViewModel(projectVM: self, partIndex: partIndex)
+        if let cached = knittingViewModelCache[partIndex] {
+            return cached
+        }
+        let vm = KnittingViewModel(projectVM: self, partIndex: partIndex)
+        knittingViewModelCache[partIndex] = vm
+        return vm
     }
 }
