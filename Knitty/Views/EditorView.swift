@@ -11,9 +11,142 @@ struct EditorView: View {
     var viewModel: ProjectViewModel
     let partIndex: Int
 
+    private struct DisplayGroup: Identifiable {
+        let id: String
+        let subPatternID: UUID?
+        let repeatCount: Int
+        let rows: [Row]
+    }
+
+    private var displayGroups: [DisplayGroup] {
+        let order = viewModel.project.projectParts[partIndex].subPatternOrder
+        guard !order.isEmpty else {
+            return [DisplayGroup(id: "placeholder", subPatternID: nil, repeatCount: 1, rows: [])]
+        }
+        var groups: [DisplayGroup] = []
+        var currentID: UUID? = nil
+        var currentCount = 0
+        var groupIndex = 0
+        let flush = {
+            if let id = currentID {
+                let rowsForID = (viewModel.project.subPatterns[id]?.rowOrder ?? [])
+                    .compactMap { viewModel.project.subPatterns[id]?.rows[$0] }
+                groups.append(DisplayGroup(
+                    id: "\(id.uuidString)-\(groupIndex)",
+                    subPatternID: id,
+                    repeatCount: currentCount,
+                    rows: rowsForID
+                ))
+                groupIndex += 1
+            }
+        }
+        for id in order {
+            if id == currentID {
+                currentCount += 1
+            } else {
+                flush()
+                currentID = id
+                currentCount = 1
+            }
+        }
+        flush()
+        return groups
+    }
+
     var body: some View {
-        Text("Editing \(viewModel.project.projectParts[partIndex].name)")
-            .navigationTitle("Edit part")
+        ScrollView {
+            VStack(spacing: 24) {
+                ForEach(displayGroups) { group in
+                    SubPatternBlock(
+                        repeatCount: group.repeatCount,
+                        rows: group.rows,
+                        onAddRow: { instructions in
+                            if let id = group.subPatternID {
+                                viewModel.appendRow(toSubPatternID: id, instructions: instructions)
+                            } else {
+                                viewModel.addRowToNewSubPattern(toPartIndex: partIndex, instructions: instructions)
+                            }
+                        }
+                    )
+                }
+                Button {
+                    viewModel.addEmptySubPattern(toPartIndex: partIndex)
+                } label: {
+                    Label("Add new subpattern", systemImage: "plus")
+                }
+                .buttonStyle(.borderedProminent)
+            }
+            .padding()
+        }
+        .navigationTitle(viewModel.project.projectParts[partIndex].name)
+    }
+}
+
+private struct SubPatternBlock: View {
+    let repeatCount: Int
+    let rows: [Row]
+    let onAddRow: (String) -> Void
+
+    @State private var isAddingRow = false
+    @State private var newInstructions = ""
+    @FocusState private var isFocused: Bool
+
+    var body: some View {
+        HStack(alignment: .center, spacing: 8) {
+            Text("[")
+                .font(.system(size: 100, weight: .ultraLight))
+                .foregroundStyle(.primary)
+            VStack(spacing: 8) {
+                ForEach(rows) { row in
+                    RowBlock(text: row.instructions)
+                }
+                if isAddingRow {
+                    TextField("Row instructions", text: $newInstructions)
+                        .textFieldStyle(.roundedBorder)
+                        .focused($isFocused)
+                        .onSubmit(submitNewRow)
+                } else {
+                    Button {
+                        isAddingRow = true
+                        isFocused = true
+                    } label: {
+                        Label("Add row", systemImage: "plus")
+                    }
+                }
+            }
+            .padding(.vertical, 12)
+            Text("]")
+                .font(.system(size: 100, weight: .ultraLight))
+                .foregroundStyle(.primary)
+            Text("× \(repeatCount)")
+                .font(.title2)
+                .foregroundStyle(.secondary)
+        }
+    }
+
+    private func submitNewRow() {
+        let trimmed = newInstructions.trimmingCharacters(in: .whitespaces)
+        guard !trimmed.isEmpty else {
+            isAddingRow = false
+            newInstructions = ""
+            return
+        }
+        onAddRow(trimmed)
+        newInstructions = ""
+        isAddingRow = false
+    }
+}
+
+private struct RowBlock: View {
+    let text: String
+
+    var body: some View {
+        Text(text)
+            .padding(.horizontal, 12)
+            .padding(.vertical, 8)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(Color.secondary.opacity(0.15))
+            .clipShape(RoundedRectangle(cornerRadius: 8))
     }
 }
 

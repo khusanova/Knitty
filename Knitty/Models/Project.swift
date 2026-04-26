@@ -96,6 +96,20 @@ struct Project: Codable, Identifiable, Hashable {
         guard projectParts.indices.contains(index) else { return }
         projectParts.remove(at: index)
     }
+
+    @discardableResult
+    mutating func addEmptySubPattern(toPartIndex partIndex: Int) -> UUID? {
+        guard projectParts.indices.contains(partIndex) else { return nil }
+        let newSubPattern = SubPattern(rows: [])
+        subPatterns[newSubPattern.id] = newSubPattern
+        projectParts[partIndex].subPatternOrder.append(newSubPattern.id)
+        return newSubPattern.id
+    }
+
+    mutating func appendRow(toSubPatternID id: UUID, instructions: String) {
+        guard subPatterns[id] != nil else { return }
+        subPatterns[id]?.appendRow(newRow: Row(instructions: instructions))
+    }
     
     mutating func knit(partIndex: Int) throws {
         guard projectParts.indices.contains(partIndex) else {

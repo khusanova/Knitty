@@ -42,6 +42,24 @@ import Foundation
         save()
     }
 
+    @discardableResult
+    func addEmptySubPattern(toPartIndex partIndex: Int) -> UUID? {
+        let id = project.addEmptySubPattern(toPartIndex: partIndex)
+        save()
+        return id
+    }
+
+    func appendRow(toSubPatternID id: UUID, instructions: String) {
+        project.appendRow(toSubPatternID: id, instructions: instructions)
+        save()
+    }
+
+    func addRowToNewSubPattern(toPartIndex partIndex: Int, instructions: String) {
+        guard let id = project.addEmptySubPattern(toPartIndex: partIndex) else { return }
+        project.appendRow(toSubPatternID: id, instructions: instructions)
+        save()
+    }
+
     func getProjectPartNames() -> [String] {
         project.projectParts.map { $0.name }
     }
