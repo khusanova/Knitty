@@ -24,6 +24,12 @@ import Foundation
         Project(name: name, projectParts: [])
     }
 
+    func renameProject(id: UUID, to newName: String) throws {
+        var project = try loadProject(id: id)
+        project.name = newName
+        try saveProject(project)
+    }
+
     func saveProject(_ project: Project) throws {
         try storage.saveProject(project)
         if let idx = entries.firstIndex(where: { $0.id == project.id }) {

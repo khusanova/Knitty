@@ -86,6 +86,11 @@ struct Project: Codable, Identifiable, Hashable {
     mutating func addProjectPart(name: String) {
         self.projectParts.append(ProjectPart(name: name, subPatterns: []))
     }
+
+    mutating func renameProjectPart(at index: Int, to newName: String) {
+        guard projectParts.indices.contains(index) else { return }
+        projectParts[index].name = newName
+    }
     
     mutating func knit(partIndex: Int) throws {
         guard projectParts.indices.contains(partIndex) else {

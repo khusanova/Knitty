@@ -32,6 +32,11 @@ import Foundation
         save()
     }
 
+    func renameProjectPart(at index: Int, to newName: String) {
+        project.renameProjectPart(at: index, to: newName)
+        save()
+    }
+
     func getProjectPartNames() -> [String] {
         project.projectParts.map { $0.name }
     }
