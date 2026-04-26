@@ -91,6 +91,11 @@ struct Project: Codable, Identifiable, Hashable {
         guard projectParts.indices.contains(index) else { return }
         projectParts[index].name = newName
     }
+
+    mutating func deleteProjectPart(at index: Int) {
+        guard projectParts.indices.contains(index) else { return }
+        projectParts.remove(at: index)
+    }
     
     mutating func knit(partIndex: Int) throws {
         guard projectParts.indices.contains(partIndex) else {

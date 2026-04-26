@@ -41,6 +41,13 @@ struct KnittingView: View {
                 Text("Congratulations! You've completed this project part!")
             }
         }
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                NavigationLink("Edit project part") {
+                    EditorView(viewModel: viewModel.projectVM, partIndex: viewModel.partIndex)
+                }
+            }
+        }
         .alert(
             "Something went wrong",
             isPresented: Binding(get: {viewModel.errorMessage != nil}, set: {if !$0 { viewModel.errorMessage = nil }}),

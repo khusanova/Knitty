@@ -37,6 +37,11 @@ import Foundation
         save()
     }
 
+    func deleteProjectPart(at index: Int) {
+        project.deleteProjectPart(at: index)
+        save()
+    }
+
     func getProjectPartNames() -> [String] {
         project.projectParts.map { $0.name }
     }

@@ -11,20 +11,10 @@ import SwiftUI
 /// if user already works on the project, then the last project part user worked on is displayed as knitting view
 struct ProjectView: View {
     @State var viewModel: ProjectViewModel
-    @State private var renamingPartIndex: Int?
-    @State private var renameText = ""
+    @State private var editingPartIndex: Int?
 
     init(projectID: UUID? = nil, store: ProjectStore) {
         self._viewModel = State(initialValue: ProjectViewModel(projectID: projectID, store: store))
-    }
-
-    private var isRenameValid: Bool {
-        guard let index = renamingPartIndex else { return false }
-        let trimmed = renameText.trimmingCharacters(in: .whitespaces)
-        guard !trimmed.isEmpty else { return false }
-        return !viewModel.getProjectPartNames().enumerated().contains {
-            $0.offset != index && $0.element == renameText
-        }
     }
 
     var body: some View {
@@ -34,9 +24,11 @@ struct ProjectView: View {
                     KnittingView(viewModel: viewModel.makeKnittingViewModel(partIndex: index))
                 }
                 .swipeActions {
-                    Button("Rename") {
-                        renamingPartIndex = index
-                        renameText = name
+                    Button("Delete", role: .destructive) {
+                        viewModel.deleteProjectPart(at: index)
+                    }
+                    Button("Edit") {
+                        editingPartIndex = index
                     }
                     .tint(.blue)
                 }
@@ -50,22 +42,8 @@ struct ProjectView: View {
                 onSubmit: { viewModel.addProjectPart(name: $0) }
             )
         }
-        .alert(
-            "Rename part",
-            isPresented: Binding(
-                get: { renamingPartIndex != nil },
-                set: { if !$0 { renamingPartIndex = nil } }
-            )
-        ) {
-            TextField("Name", text: $renameText)
-            Button("Save") {
-                if let index = renamingPartIndex {
-                    viewModel.renameProjectPart(at: index, to: renameText)
-                }
-                renamingPartIndex = nil
-            }
-            .disabled(!isRenameValid)
-            Button("Cancel", role: .cancel) { renamingPartIndex = nil }
+        .navigationDestination(item: $editingPartIndex) { index in
+            EditorView(viewModel: viewModel, partIndex: index)
         }
     }
 }

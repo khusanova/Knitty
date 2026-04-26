@@ -40,6 +40,13 @@ class ProjectStorage {
         try data.write(to: projectURL(for: project.id))
     }
 
+    func deleteProject(id: UUID) throws {
+        let url = projectURL(for: id)
+        if FileManager.default.fileExists(atPath: url.path) {
+            try FileManager.default.removeItem(at: url)
+        }
+    }
+
     func loadIndex() throws -> ProjectIndex {
         guard let data = try? Data(contentsOf: indexURL) else {
             return ProjectIndex(entries: [])

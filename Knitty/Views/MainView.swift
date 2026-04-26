@@ -31,6 +31,9 @@ struct MainView: View {
                         ProjectView(projectID: entry.id, store: store)
                     }
                     .swipeActions {
+                        Button("Delete", role: .destructive) {
+                            try? store.deleteProject(id: entry.id)
+                        }
                         Button("Rename") {
                             renamingEntry = entry
                             renameText = entry.name
