@@ -19,6 +19,10 @@ import Foundation
     func loadProject(id: UUID) throws -> Project {
         try storage.loadProject(id: id)
     }
+    
+    func createProject(name: String) -> Project {
+        Project(name: name, projectParts: [])
+    }
 
     func saveProject(_ project: Project) throws {
         try storage.saveProject(project)

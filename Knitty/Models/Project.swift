@@ -7,7 +7,10 @@
 
 import Foundation
 
-struct Project: Codable, Identifiable{
+struct Project: Codable, Identifiable, Hashable {
+    static func == (lhs: Project, rhs: Project) -> Bool { lhs.id == rhs.id }
+    func hash(into hasher: inout Hasher) { hasher.combine(id) }
+
     var id = UUID()
     var name: String
     struct ProjectPart: Codable, Identifiable{
