@@ -28,12 +28,6 @@ struct RowGroup: Identifiable, Codable {
         self.details = details
     }
 
-    init(baseRow: Row, length: Int, name: String? = nil, details: String? = nil) {
-        self.rows = (0..<length).map { _ in Row(instructions: baseRow.instructions) }
-        self.name = name
-        self.details = details
-    }
-
     func getRow(at index: Int) -> Row? {
         guard rows.indices.contains(index) else { return nil }
         return rows[index]
