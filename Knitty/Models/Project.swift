@@ -16,75 +16,75 @@ struct Project: Codable, Identifiable, Hashable {
     struct ProjectPart: Codable, Identifiable{
         var id = UUID()
         var name: String
-        var subPatternOrder: [UUID]
+        var rowGroupOrder: [UUID]
         var rowCounter: Int
         var isFinished: Bool
 
-        init(name: String, subPatterns: [SubPattern]){
+        init(name: String, rowGroups: [RowGroup]){
             self.name = name
-            self.subPatternOrder = subPatterns.map { $0.id }
+            self.rowGroupOrder = rowGroups.map { $0.id }
             self.rowCounter = 0
             self.isFinished = false
         }
     }
     var projectParts: [ProjectPart]
-    var subPatterns: [UUID: SubPattern]
+    var rowGroups: [UUID: RowGroup]
     var currentProjectPart: Int?
     var notes: String?
     var projectURL: URL?
 
-    init(name: String, projectParts: [(String, [SubPattern])], notes: String? = nil, projectURL: URL? = nil){
+    init(name: String, projectParts: [(String, [RowGroup])], notes: String? = nil, projectURL: URL? = nil){
         self.name = name
         self.projectParts = []
-        self.subPatterns = [:]
-        for (partName, partSubPatterns) in projectParts{
-            self.projectParts.append(ProjectPart(name: partName, subPatterns: partSubPatterns))
-            for subPattern in partSubPatterns{
-                self.subPatterns[subPattern.id] = subPattern
+        self.rowGroups = [:]
+        for (partName, partRowGroups) in projectParts{
+            self.projectParts.append(ProjectPart(name: partName, rowGroups: partRowGroups))
+            for rowGroup in partRowGroups{
+                self.rowGroups[rowGroup.id] = rowGroup
             }
         }
         self.notes = notes
         self.projectURL = projectURL
     }
-    
+
     func totalRowCount(of projectPartIndex: Int) -> Int {
-        projectParts[projectPartIndex].subPatternOrder.compactMap { subPatterns[$0]?.count ?? 0}.reduce(0,+)
+        projectParts[projectPartIndex].rowGroupOrder.compactMap { rowGroups[$0]?.count ?? 0}.reduce(0,+)
     }
 
-    func getSubPattern(indexRow: Int, indexPart: Int) -> SubPattern? {
+    func getRowGroup(indexRow: Int, indexPart: Int) -> RowGroup? {
         let projectPart = projectParts[indexPart]
         var indexRow = indexRow
-        var subPatternIDIter = projectPart.subPatternOrder.makeIterator()
+        var rowGroupIDIter = projectPart.rowGroupOrder.makeIterator()
         guard indexRow >= 0 else {
             return nil
         }
         while indexRow >= 0 {
-            guard let subPatternID = subPatternIDIter.next() else {
+            guard let rowGroupID = rowGroupIDIter.next() else {
                 return nil
             }
-            guard var subPattern = subPatterns[subPatternID] else {
+            guard var rowGroup = rowGroups[rowGroupID] else {
                 return nil
             }
-            if indexRow < subPattern.count {
-                subPattern.rowCounter = indexRow
-                return subPattern
+            if indexRow < rowGroup.count {
+                rowGroup.rowCounter = indexRow
+                return rowGroup
             }
             else {
-                indexRow -= subPattern.count
+                indexRow -= rowGroup.count
             }
         }
         return nil
     }
 
     func getRow(indexRow: Int, indexPart: Int) -> Row? {
-        guard let subPattern = getSubPattern(indexRow: indexRow, indexPart: indexPart) else {
+        guard let rowGroup = getRowGroup(indexRow: indexRow, indexPart: indexPart) else {
             return nil
         }
-        return subPattern.getCurrentRow()
+        return rowGroup.getCurrentRow()
     }
 
     mutating func addProjectPart(name: String) {
-        self.projectParts.append(ProjectPart(name: name, subPatterns: []))
+        self.projectParts.append(ProjectPart(name: name, rowGroups: []))
     }
 
     mutating func renameProjectPart(at index: Int, to newName: String) {
@@ -98,49 +98,49 @@ struct Project: Codable, Identifiable, Hashable {
     }
 
     @discardableResult
-    mutating func addEmptySubPattern(toPartIndex partIndex: Int) -> UUID? {
+    mutating func addEmptyRowGroup(toPartIndex partIndex: Int) -> UUID? {
         guard projectParts.indices.contains(partIndex) else { return nil }
-        let newSubPattern = SubPattern(rows: [])
-        subPatterns[newSubPattern.id] = newSubPattern
-        projectParts[partIndex].subPatternOrder.append(newSubPattern.id)
-        return newSubPattern.id
+        let newRowGroup = RowGroup(rows: [])
+        rowGroups[newRowGroup.id] = newRowGroup
+        projectParts[partIndex].rowGroupOrder.append(newRowGroup.id)
+        return newRowGroup.id
     }
 
-    mutating func appendRow(toSubPatternID id: UUID, instructions: String) {
-        guard subPatterns[id] != nil else { return }
-        subPatterns[id]?.appendRow(newRow: Row(instructions: instructions))
+    mutating func appendRow(toRowGroupID id: UUID, instructions: String) {
+        guard rowGroups[id] != nil else { return }
+        rowGroups[id]?.appendRow(newRow: Row(instructions: instructions))
     }
 
-    mutating func setSubPatternRepeatCount(
+    mutating func setRowGroupRepeatCount(
         toPartIndex partIndex: Int,
         atOrderIndex startIndex: Int,
         oldCount: Int,
         newCount: Int
     ) {
         guard projectParts.indices.contains(partIndex) else { return }
-        let order = projectParts[partIndex].subPatternOrder
+        let order = projectParts[partIndex].rowGroupOrder
         let endIndex = startIndex + oldCount
         guard startIndex >= 0, endIndex <= order.count, oldCount > 0, newCount > 0 else { return }
         let id = order[startIndex]
         guard order[startIndex..<endIndex].allSatisfy({ $0 == id }) else { return }
         let replacement = Array(repeating: id, count: newCount)
-        projectParts[partIndex].subPatternOrder.replaceSubrange(startIndex..<endIndex, with: replacement)
+        projectParts[partIndex].rowGroupOrder.replaceSubrange(startIndex..<endIndex, with: replacement)
     }
 
-    mutating func deleteSubPatternGroup(
+    mutating func deleteRowGroup(
         fromPartIndex partIndex: Int,
         atOrderIndex startIndex: Int,
         oldCount: Int
     ) {
         guard projectParts.indices.contains(partIndex) else { return }
-        let order = projectParts[partIndex].subPatternOrder
+        let order = projectParts[partIndex].rowGroupOrder
         let endIndex = startIndex + oldCount
         guard startIndex >= 0, endIndex <= order.count, oldCount > 0 else { return }
         let id = order[startIndex]
         guard order[startIndex..<endIndex].allSatisfy({ $0 == id }) else { return }
-        projectParts[partIndex].subPatternOrder.removeSubrange(startIndex..<endIndex)
+        projectParts[partIndex].rowGroupOrder.removeSubrange(startIndex..<endIndex)
     }
-    
+
     mutating func knit(partIndex: Int) throws {
         guard projectParts.indices.contains(partIndex) else {
             throw ProjectProgressError.partIndexOutOfRange

@@ -1,5 +1,5 @@
 //
-//  SubPattern.swift
+//  RowGroup.swift
 //  Knitty
 //
 //  Created by Y. Khusanova on 20.01.26.
@@ -12,7 +12,7 @@ struct Row: Identifiable, Codable {
     var instructions: String
 }
 
-struct SubPattern: Identifiable, Codable {
+struct RowGroup: Identifiable, Codable {
     var id = UUID()
     var rows: [UUID: Row]
     var rowOrder: [UUID]
@@ -65,14 +65,14 @@ struct SubPattern: Identifiable, Codable {
         rowOrder.append(newRow.id)
     }
 
-    mutating func appendSubPattern(_ subPattern: SubPattern) {
-        self.rows.merge(subPattern.rows) { existing, _ in existing }
-        self.rowOrder += subPattern.rowOrder
+    mutating func appendRowGroup(_ rowGroup: RowGroup) {
+        self.rows.merge(rowGroup.rows) { existing, _ in existing }
+        self.rowOrder += rowGroup.rowOrder
     }
 
-    static func + (lhs: SubPattern, rhs: SubPattern) -> SubPattern {
+    static func + (lhs: RowGroup, rhs: RowGroup) -> RowGroup {
         var result = lhs
-        result.appendSubPattern(rhs)
+        result.appendRowGroup(rhs)
         return result
     }
 }

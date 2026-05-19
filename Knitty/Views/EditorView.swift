@@ -13,16 +13,16 @@ struct EditorView: View {
 
     private struct DisplayGroup: Identifiable {
         let id: String
-        let subPatternID: UUID?
+        let rowGroupID: UUID?
         let startIndex: Int
         let repeatCount: Int
         let rows: [Row]
     }
 
     private var displayGroups: [DisplayGroup] {
-        let order = viewModel.project.projectParts[partIndex].subPatternOrder
+        let order = viewModel.project.projectParts[partIndex].rowGroupOrder
         guard !order.isEmpty else {
-            return [DisplayGroup(id: "placeholder", subPatternID: nil, startIndex: 0, repeatCount: 1, rows: [])]
+            return [DisplayGroup(id: "placeholder", rowGroupID: nil, startIndex: 0, repeatCount: 1, rows: [])]
         }
         var groups: [DisplayGroup] = []
         var currentID: UUID? = nil
@@ -31,11 +31,11 @@ struct EditorView: View {
         var groupIndex = 0
         let flush = {
             if let id = currentID {
-                let rowsForID = (viewModel.project.subPatterns[id]?.rowOrder ?? [])
-                    .compactMap { viewModel.project.subPatterns[id]?.rows[$0] }
+                let rowsForID = (viewModel.project.rowGroups[id]?.rowOrder ?? [])
+                    .compactMap { viewModel.project.rowGroups[id]?.rows[$0] }
                 groups.append(DisplayGroup(
                     id: "\(id.uuidString)-\(groupIndex)",
-                    subPatternID: id,
+                    rowGroupID: id,
                     startIndex: currentStart,
                     repeatCount: currentCount,
                     rows: rowsForID
@@ -61,19 +61,19 @@ struct EditorView: View {
         ScrollView {
             VStack(spacing: 24) {
                 ForEach(displayGroups) { group in
-                    SubPatternBlock(
+                    RowGroupBlock(
                         repeatCount: group.repeatCount,
                         rows: group.rows,
                         onAddRow: { instructions in
-                            if let id = group.subPatternID {
-                                viewModel.appendRow(toSubPatternID: id, instructions: instructions)
+                            if let id = group.rowGroupID {
+                                viewModel.appendRow(toRowGroupID: id, instructions: instructions)
                             } else {
-                                viewModel.addRowToNewSubPattern(toPartIndex: partIndex, instructions: instructions)
+                                viewModel.addRowToNewRowGroup(toPartIndex: partIndex, instructions: instructions)
                             }
                         },
-                        onChangeRepeatCount: group.subPatternID.map { _ in
+                        onChangeRepeatCount: group.rowGroupID.map { _ in
                             { newCount in
-                                viewModel.setSubPatternRepeatCount(
+                                viewModel.setRowGroupRepeatCount(
                                     toPartIndex: partIndex,
                                     atOrderIndex: group.startIndex,
                                     oldCount: group.repeatCount,
@@ -81,9 +81,9 @@ struct EditorView: View {
                                 )
                             }
                         },
-                        onDelete: group.subPatternID.map { _ in
+                        onDelete: group.rowGroupID.map { _ in
                             {
-                                viewModel.deleteSubPatternGroup(
+                                viewModel.deleteRowGroup(
                                     fromPartIndex: partIndex,
                                     atOrderIndex: group.startIndex,
                                     oldCount: group.repeatCount
@@ -93,9 +93,9 @@ struct EditorView: View {
                     )
                 }
                 Button {
-                    viewModel.addEmptySubPattern(toPartIndex: partIndex)
+                    viewModel.addEmptyRowGroup(toPartIndex: partIndex)
                 } label: {
-                    Label("Add new subpattern", systemImage: "plus")
+                    Label("Add new row group", systemImage: "plus")
                 }
                 .buttonStyle(.borderedProminent)
             }
@@ -105,7 +105,7 @@ struct EditorView: View {
     }
 }
 
-private struct SubPatternBlock: View {
+private struct RowGroupBlock: View {
     let repeatCount: Int
     let rows: [Row]
     let onAddRow: (String) -> Void
@@ -168,7 +168,7 @@ private struct SubPatternBlock: View {
                 }
             }
         }
-        .alert("Delete this subpattern?", isPresented: $showDeleteConfirm) {
+        .alert("Delete this row group?", isPresented: $showDeleteConfirm) {
             Button("Delete", role: .destructive) { onDelete?() }
             Button("Cancel", role: .cancel) {}
         } message: {

@@ -7,7 +7,7 @@
 
 
 extension Project{
-    static let bananaSockRight = ("Right sock", [SubPattern.bananaSockTop] + (0..<10).map {_ in SubPattern.bananaSockRightBody} + [SubPattern.bananaSockRightBottom])
-    static let bananaSockLeft = ("Left sock", [SubPattern.bananaSockTop] + (0..<10).map {_ in SubPattern.bananaSockLeftBody} + [SubPattern.bananaSockLeftBottom])
+    static let bananaSockRight = ("Right sock", [RowGroup.bananaSockTop] + (0..<10).map {_ in RowGroup.bananaSockRightBody} + [RowGroup.bananaSockRightBottom])
+    static let bananaSockLeft = ("Left sock", [RowGroup.bananaSockTop] + (0..<10).map {_ in RowGroup.bananaSockLeftBody} + [RowGroup.bananaSockLeftBottom])
     static let bananaSocks = Project(name: "Banana socks", projectParts: [bananaSockRight, bananaSockLeft])
 }

@@ -47,30 +47,30 @@ import Foundation
     }
 
     @discardableResult
-    func addEmptySubPattern(toPartIndex partIndex: Int) -> UUID? {
-        let id = project.addEmptySubPattern(toPartIndex: partIndex)
+    func addEmptyRowGroup(toPartIndex partIndex: Int) -> UUID? {
+        let id = project.addEmptyRowGroup(toPartIndex: partIndex)
         save()
         return id
     }
 
-    func appendRow(toSubPatternID id: UUID, instructions: String) {
-        project.appendRow(toSubPatternID: id, instructions: instructions)
+    func appendRow(toRowGroupID id: UUID, instructions: String) {
+        project.appendRow(toRowGroupID: id, instructions: instructions)
         save()
     }
 
-    func addRowToNewSubPattern(toPartIndex partIndex: Int, instructions: String) {
-        guard let id = project.addEmptySubPattern(toPartIndex: partIndex) else { return }
-        project.appendRow(toSubPatternID: id, instructions: instructions)
+    func addRowToNewRowGroup(toPartIndex partIndex: Int, instructions: String) {
+        guard let id = project.addEmptyRowGroup(toPartIndex: partIndex) else { return }
+        project.appendRow(toRowGroupID: id, instructions: instructions)
         save()
     }
 
-    func setSubPatternRepeatCount(
+    func setRowGroupRepeatCount(
         toPartIndex partIndex: Int,
         atOrderIndex startIndex: Int,
         oldCount: Int,
         newCount: Int
     ) {
-        project.setSubPatternRepeatCount(
+        project.setRowGroupRepeatCount(
             toPartIndex: partIndex,
             atOrderIndex: startIndex,
             oldCount: oldCount,
@@ -79,12 +79,12 @@ import Foundation
         save()
     }
 
-    func deleteSubPatternGroup(
+    func deleteRowGroup(
         fromPartIndex partIndex: Int,
         atOrderIndex startIndex: Int,
         oldCount: Int
     ) {
-        project.deleteSubPatternGroup(
+        project.deleteRowGroup(
             fromPartIndex: partIndex,
             atOrderIndex: startIndex,
             oldCount: oldCount
