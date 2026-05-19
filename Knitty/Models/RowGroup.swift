@@ -17,15 +17,15 @@ struct RowGroup: Identifiable, Codable {
     var rows: [Row]
     var rowCounter: Int?
     var name: String?
-    var details: String?
+    var notes: String?
     var count: Int {
         rows.count
     }
 
-    init(rows: [Row], name: String? = nil, details: String? = nil) {
+    init(rows: [Row], name: String? = nil, notes: String? = nil) {
         self.rows = rows
         self.name = name
-        self.details = details
+        self.notes = notes
     }
 
     func getRow(at index: Int) -> Row? {
