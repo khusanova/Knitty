@@ -14,60 +14,47 @@ struct Row: Identifiable, Codable {
 
 struct RowGroup: Identifiable, Codable {
     var id = UUID()
-    var rows: [UUID: Row]
-    var rowOrder: [UUID]
+    var rows: [Row]
     var rowCounter: Int?
     var name: String?
     var details: String?
     var count: Int {
-        rowOrder.count
+        rows.count
     }
 
     init(rows: [Row], name: String? = nil, details: String? = nil) {
-        self.rowOrder = rows.map { $0.id }
-        self.rows = Dictionary(rows.map { ($0.id, $0) },
-                               uniquingKeysWith: { old, _ in old})
+        self.rows = rows
         self.name = name
         self.details = details
     }
 
     init(baseRow: Row, length: Int, name: String? = nil, details: String? = nil) {
-        self.rows = [baseRow.id: baseRow]
-        self.rowOrder = (0..<length).map { _ in baseRow.id}
+        self.rows = (0..<length).map { _ in Row(instructions: baseRow.instructions) }
         self.name = name
         self.details = details
     }
 
     func getRow(at index: Int) -> Row? {
-        guard index >= 0 && index < count else {
-            return nil
-        }
-        guard let row = rows[rowOrder[index]] else {
-            return nil
-        }
-        return row
+        guard rows.indices.contains(index) else { return nil }
+        return rows[index]
     }
 
     func getCurrentRow() -> Row? {
-        guard let index = rowCounter else {
-            return nil
-        }
+        guard let index = rowCounter else { return nil }
         return getRow(at: index)
     }
 
     mutating func updateRow(at index: Int, newRow: Row) {
-        rows[newRow.id] = newRow
-        rowOrder[index] = newRow.id
+        guard rows.indices.contains(index) else { return }
+        rows[index] = newRow
     }
 
     mutating func appendRow(newRow: Row) {
-        rows[newRow.id] = newRow
-        rowOrder.append(newRow.id)
+        rows.append(newRow)
     }
 
     mutating func appendRowGroup(_ rowGroup: RowGroup) {
-        self.rows.merge(rowGroup.rows) { existing, _ in existing }
-        self.rowOrder += rowGroup.rowOrder
+        rows += rowGroup.rows
     }
 
     static func + (lhs: RowGroup, rhs: RowGroup) -> RowGroup {

@@ -31,8 +31,7 @@ struct EditorView: View {
         var groupIndex = 0
         let flush = {
             if let id = currentID {
-                let rowsForID = (viewModel.project.rowGroups[id]?.rowOrder ?? [])
-                    .compactMap { viewModel.project.rowGroups[id]?.rows[$0] }
+                let rowsForID = viewModel.project.rowGroups[id]?.rows ?? []
                 groups.append(DisplayGroup(
                     id: "\(id.uuidString)-\(groupIndex)",
                     rowGroupID: id,
