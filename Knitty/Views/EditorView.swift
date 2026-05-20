@@ -13,46 +13,36 @@ struct EditorView: View {
 
     private struct DisplayGroup: Identifiable {
         let id: String
-        let rowGroupID: UUID?
+        let isPlaceholder: Bool
         let startIndex: Int
         let repeatCount: Int
         let rows: [Row]
     }
 
     private var displayGroups: [DisplayGroup] {
-        let order = viewModel.project.projectParts[partIndex].rowGroupOrder
-        guard !order.isEmpty else {
-            return [DisplayGroup(id: "placeholder", rowGroupID: nil, startIndex: 0, repeatCount: 1, rows: [])]
+        let rowGroups = viewModel.project.projectParts[partIndex].rowGroups
+        guard !rowGroups.isEmpty else {
+            return [DisplayGroup(id: "placeholder", isPlaceholder: true, startIndex: 0, repeatCount: 1, rows: [])]
         }
         var groups: [DisplayGroup] = []
-        var currentID: UUID? = nil
-        var currentStart = 0
-        var currentCount = 0
-        var groupIndex = 0
-        let flush = {
-            if let id = currentID {
-                let rowsForID = viewModel.project.rowGroups[id]?.rows ?? []
-                groups.append(DisplayGroup(
-                    id: "\(id.uuidString)-\(groupIndex)",
-                    rowGroupID: id,
-                    startIndex: currentStart,
-                    repeatCount: currentCount,
-                    rows: rowsForID
-                ))
-                groupIndex += 1
+        var runStart = 0
+        while runStart < rowGroups.count {
+            let template = rowGroups[runStart]
+            let templateInstructions = template.rows.map(\.instructions)
+            var runEnd = runStart + 1
+            while runEnd < rowGroups.count,
+                  rowGroups[runEnd].rows.map(\.instructions) == templateInstructions {
+                runEnd += 1
             }
+            groups.append(DisplayGroup(
+                id: "\(template.id.uuidString)-\(runStart)",
+                isPlaceholder: false,
+                startIndex: runStart,
+                repeatCount: runEnd - runStart,
+                rows: template.rows
+            ))
+            runStart = runEnd
         }
-        for (i, id) in order.enumerated() {
-            if id == currentID {
-                currentCount += 1
-            } else {
-                flush()
-                currentID = id
-                currentStart = i
-                currentCount = 1
-            }
-        }
-        flush()
         return groups
     }
 
@@ -64,30 +54,31 @@ struct EditorView: View {
                         repeatCount: group.repeatCount,
                         rows: group.rows,
                         onAddRow: { instructions in
-                            if let id = group.rowGroupID {
-                                viewModel.appendRow(toRowGroupID: id, instructions: instructions)
-                            } else {
+                            if group.isPlaceholder {
                                 viewModel.addRowToNewRowGroup(toPartIndex: partIndex, instructions: instructions)
-                            }
-                        },
-                        onChangeRepeatCount: group.rowGroupID.map { _ in
-                            { newCount in
-                                viewModel.setRowGroupRepeatCount(
+                            } else {
+                                viewModel.appendRow(
                                     toPartIndex: partIndex,
-                                    atOrderIndex: group.startIndex,
-                                    oldCount: group.repeatCount,
-                                    newCount: newCount
+                                    runStart: group.startIndex,
+                                    runLength: group.repeatCount,
+                                    instructions: instructions
                                 )
                             }
                         },
-                        onDelete: group.rowGroupID.map { _ in
-                            {
-                                viewModel.deleteRowGroup(
-                                    fromPartIndex: partIndex,
-                                    atOrderIndex: group.startIndex,
-                                    oldCount: group.repeatCount
-                                )
-                            }
+                        onChangeRepeatCount: group.isPlaceholder ? nil : { newCount in
+                            viewModel.setRowGroupRepeatCount(
+                                toPartIndex: partIndex,
+                                atOrderIndex: group.startIndex,
+                                oldCount: group.repeatCount,
+                                newCount: newCount
+                            )
+                        },
+                        onDelete: group.isPlaceholder ? nil : {
+                            viewModel.deleteRowGroup(
+                                fromPartIndex: partIndex,
+                                atOrderIndex: group.startIndex,
+                                oldCount: group.repeatCount
+                            )
                         }
                     )
                 }

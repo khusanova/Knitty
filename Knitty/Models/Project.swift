@@ -13,74 +13,56 @@ struct Project: Codable, Identifiable, Hashable {
 
     var id = UUID()
     var name: String
-    struct ProjectPart: Codable, Identifiable{
+    struct ProjectPart: Codable, Identifiable {
         var id = UUID()
         var name: String
-        var rowGroupOrder: [UUID]
-        var rowCounter: Int
-        var isFinished: Bool
+        var rowGroups: [RowGroup]
 
-        init(name: String, rowGroups: [RowGroup]){
+        init(name: String, rowGroups: [RowGroup]) {
             self.name = name
-            self.rowGroupOrder = rowGroups.map { $0.id }
-            self.rowCounter = 0
-            self.isFinished = false
+            self.rowGroups = rowGroups
+        }
+
+        var totalRowCount: Int { rowGroups.map(\.count).reduce(0, +) }
+        var rowCounter: Int { rowGroups.map(\.rowCounter).reduce(0, +) }
+        var isFinished: Bool {
+            !rowGroups.isEmpty && rowGroups.allSatisfy(\.isFinished)
         }
     }
     var projectParts: [ProjectPart]
-    var rowGroups: [UUID: RowGroup]
     var currentProjectPart: Int?
     var notes: String?
     var projectURL: URL?
 
-    init(name: String, projectParts: [(String, [RowGroup])], notes: String? = nil, projectURL: URL? = nil){
+    init(name: String, projectParts: [(String, [RowGroup])], notes: String? = nil, projectURL: URL? = nil) {
         self.name = name
-        self.projectParts = []
-        self.rowGroups = [:]
-        for (partName, partRowGroups) in projectParts{
-            self.projectParts.append(ProjectPart(name: partName, rowGroups: partRowGroups))
-            for rowGroup in partRowGroups{
-                self.rowGroups[rowGroup.id] = rowGroup
-            }
-        }
+        self.projectParts = projectParts.map { ProjectPart(name: $0.0, rowGroups: $0.1) }
         self.notes = notes
         self.projectURL = projectURL
     }
 
     func totalRowCount(of projectPartIndex: Int) -> Int {
-        projectParts[projectPartIndex].rowGroupOrder.compactMap { rowGroups[$0]?.count ?? 0}.reduce(0,+)
+        projectParts[projectPartIndex].totalRowCount
     }
 
+    /// Returns the group containing the global row `indexRow` within the given part,
+    /// with its `rowCounter` set to the row's local index within that group.
     func getRowGroup(indexRow: Int, indexPart: Int) -> RowGroup? {
-        let projectPart = projectParts[indexPart]
-        var indexRow = indexRow
-        var rowGroupIDIter = projectPart.rowGroupOrder.makeIterator()
-        guard indexRow >= 0 else {
-            return nil
-        }
-        while indexRow >= 0 {
-            guard let rowGroupID = rowGroupIDIter.next() else {
-                return nil
+        guard projectParts.indices.contains(indexPart), indexRow >= 0 else { return nil }
+        var remaining = indexRow
+        for group in projectParts[indexPart].rowGroups {
+            if remaining < group.count {
+                var copy = group
+                copy.rowCounter = remaining
+                return copy
             }
-            guard var rowGroup = rowGroups[rowGroupID] else {
-                return nil
-            }
-            if indexRow < rowGroup.count {
-                rowGroup.rowCounter = indexRow
-                return rowGroup
-            }
-            else {
-                indexRow -= rowGroup.count
-            }
+            remaining -= group.count
         }
         return nil
     }
 
     func getRow(indexRow: Int, indexPart: Int) -> Row? {
-        guard let rowGroup = getRowGroup(indexRow: indexRow, indexPart: indexPart) else {
-            return nil
-        }
-        return rowGroup.getCurrentRow()
+        getRowGroup(indexRow: indexRow, indexPart: indexPart)?.currentRow
     }
 
     mutating func addProjectPart(name: String) {
@@ -101,16 +83,32 @@ struct Project: Codable, Identifiable, Hashable {
     mutating func addEmptyRowGroup(toPartIndex partIndex: Int) -> UUID? {
         guard projectParts.indices.contains(partIndex) else { return nil }
         let newRowGroup = RowGroup(rows: [])
-        rowGroups[newRowGroup.id] = newRowGroup
-        projectParts[partIndex].rowGroupOrder.append(newRowGroup.id)
+        projectParts[partIndex].rowGroups.append(newRowGroup)
         return newRowGroup.id
     }
 
-    mutating func appendRow(toRowGroupID id: UUID, instructions: String) {
-        guard rowGroups[id] != nil else { return }
-        rowGroups[id]?.appendRow(newRow: Row(instructions: instructions))
+    /// Appends a row to every group in the run `[runStart, runStart + runLength)`.
+    /// Editor groups consecutive content-equal RowGroups into a single visual block;
+    /// this keeps all copies in that block in sync.
+    mutating func appendRow(
+        toPartIndex partIndex: Int,
+        runStart: Int,
+        runLength: Int,
+        instructions: String
+    ) {
+        guard projectParts.indices.contains(partIndex) else { return }
+        let endIndex = runStart + runLength
+        guard runStart >= 0,
+              endIndex <= projectParts[partIndex].rowGroups.count,
+              runLength > 0 else { return }
+        for i in runStart..<endIndex {
+            projectParts[partIndex].rowGroups[i].appendRow(newRow: Row(instructions: instructions))
+        }
     }
 
+    /// Replaces `[startIndex, startIndex + oldCount)` with `newCount` copies of the first
+    /// group in the run: the original is preserved (id and progress intact), the additional
+    /// copies are fresh (new UUIDs, rowCounter = 0).
     mutating func setRowGroupRepeatCount(
         toPartIndex partIndex: Int,
         atOrderIndex startIndex: Int,
@@ -118,13 +116,19 @@ struct Project: Codable, Identifiable, Hashable {
         newCount: Int
     ) {
         guard projectParts.indices.contains(partIndex) else { return }
-        let order = projectParts[partIndex].rowGroupOrder
+        let groups = projectParts[partIndex].rowGroups
         let endIndex = startIndex + oldCount
-        guard startIndex >= 0, endIndex <= order.count, oldCount > 0, newCount > 0 else { return }
-        let id = order[startIndex]
-        guard order[startIndex..<endIndex].allSatisfy({ $0 == id }) else { return }
-        let replacement = Array(repeating: id, count: newCount)
-        projectParts[partIndex].rowGroupOrder.replaceSubrange(startIndex..<endIndex, with: replacement)
+        guard startIndex >= 0, endIndex <= groups.count, oldCount > 0, newCount > 0 else { return }
+        let template = groups[startIndex]
+        var replacement: [RowGroup] = [template]
+        for _ in 1..<newCount {
+            replacement.append(RowGroup(
+                rows: template.rows.map { Row(instructions: $0.instructions) },
+                name: template.name,
+                notes: template.notes
+            ))
+        }
+        projectParts[partIndex].rowGroups.replaceSubrange(startIndex..<endIndex, with: replacement)
     }
 
     mutating func deleteRowGroup(
@@ -133,35 +137,30 @@ struct Project: Codable, Identifiable, Hashable {
         oldCount: Int
     ) {
         guard projectParts.indices.contains(partIndex) else { return }
-        let order = projectParts[partIndex].rowGroupOrder
         let endIndex = startIndex + oldCount
-        guard startIndex >= 0, endIndex <= order.count, oldCount > 0 else { return }
-        let id = order[startIndex]
-        guard order[startIndex..<endIndex].allSatisfy({ $0 == id }) else { return }
-        projectParts[partIndex].rowGroupOrder.removeSubrange(startIndex..<endIndex)
+        guard startIndex >= 0,
+              endIndex <= projectParts[partIndex].rowGroups.count,
+              oldCount > 0 else { return }
+        projectParts[partIndex].rowGroups.removeSubrange(startIndex..<endIndex)
     }
 
     mutating func knit(partIndex: Int) throws {
         guard projectParts.indices.contains(partIndex) else {
             throw ProjectProgressError.partIndexOutOfRange
         }
-        guard projectParts[partIndex].rowCounter < self.totalRowCount(of: partIndex) else {
+        guard let groupIndex = projectParts[partIndex].rowGroups.firstIndex(where: { !$0.isFinished }) else {
             throw ProjectProgressError.rowIndexOutOfRange
         }
-        projectParts[partIndex].rowCounter += 1
-        if projectParts[partIndex].rowCounter == self.totalRowCount(of: partIndex) {
-            projectParts[partIndex].isFinished = true
-        }
+        projectParts[partIndex].rowGroups[groupIndex].rowCounter += 1
     }
 
     mutating func unravel(partIndex: Int) throws {
         guard projectParts.indices.contains(partIndex) else {
             throw ProjectProgressError.partIndexOutOfRange
         }
-        guard projectParts[partIndex].rowCounter > 0 else {
+        guard let groupIndex = projectParts[partIndex].rowGroups.lastIndex(where: { $0.rowCounter > 0 }) else {
             throw ProjectProgressError.rowIndexOutOfRange
         }
-        projectParts[partIndex].rowCounter -= 1
-        projectParts[partIndex].isFinished = false
+        projectParts[partIndex].rowGroups[groupIndex].rowCounter -= 1
     }
 }

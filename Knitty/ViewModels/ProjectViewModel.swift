@@ -53,14 +53,30 @@ import Foundation
         return id
     }
 
-    func appendRow(toRowGroupID id: UUID, instructions: String) {
-        project.appendRow(toRowGroupID: id, instructions: instructions)
+    func appendRow(
+        toPartIndex partIndex: Int,
+        runStart: Int,
+        runLength: Int,
+        instructions: String
+    ) {
+        project.appendRow(
+            toPartIndex: partIndex,
+            runStart: runStart,
+            runLength: runLength,
+            instructions: instructions
+        )
         save()
     }
 
     func addRowToNewRowGroup(toPartIndex partIndex: Int, instructions: String) {
-        guard let id = project.addEmptyRowGroup(toPartIndex: partIndex) else { return }
-        project.appendRow(toRowGroupID: id, instructions: instructions)
+        guard project.addEmptyRowGroup(toPartIndex: partIndex) != nil else { return }
+        let groups = project.projectParts[partIndex].rowGroups
+        project.appendRow(
+            toPartIndex: partIndex,
+            runStart: groups.count - 1,
+            runLength: 1,
+            instructions: instructions
+        )
         save()
     }
 

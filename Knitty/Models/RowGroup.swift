@@ -15,11 +15,15 @@ struct Row: Identifiable, Codable {
 struct RowGroup: Identifiable, Codable {
     var id = UUID()
     var rows: [Row]
-    var rowCounter: Int?
+    var rowCounter: Int = 0
     var name: String?
     var notes: String?
-    var count: Int {
-        rows.count
+
+    var count: Int { rows.count }
+    var isFinished: Bool { rowCounter >= rows.count }
+    var currentRow: Row? {
+        guard rowCounter < rows.count else { return nil }
+        return rows[rowCounter]
     }
 
     init(rows: [Row], name: String? = nil, notes: String? = nil) {
@@ -33,11 +37,6 @@ struct RowGroup: Identifiable, Codable {
         return rows[index]
     }
 
-    func getCurrentRow() -> Row? {
-        guard let index = rowCounter else { return nil }
-        return getRow(at: index)
-    }
-
     mutating func updateRow(at index: Int, newRow: Row) {
         guard rows.indices.contains(index) else { return }
         rows[index] = newRow
@@ -45,15 +44,5 @@ struct RowGroup: Identifiable, Codable {
 
     mutating func appendRow(newRow: Row) {
         rows.append(newRow)
-    }
-
-    mutating func appendRowGroup(_ rowGroup: RowGroup) {
-        rows += rowGroup.rows
-    }
-
-    static func + (lhs: RowGroup, rhs: RowGroup) -> RowGroup {
-        var result = lhs
-        result.appendRowGroup(rhs)
-        return result
     }
 }
