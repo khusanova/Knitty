@@ -29,24 +29,18 @@ struct Project: Codable, Identifiable, Hashable {
         projectParts[projectPartIndex].totalRowCount
     }
 
-    /// Returns the group containing the global row `indexRow` within the given part,
-    /// with its `rowCounter` set to the row's local index within that group.
-    func getRowGroup(indexRow: Int, indexPart: Int) -> RowGroup? {
+    /// Returns the row at the global index `indexRow` within the given part,
+    /// counting across the part's row groups.
+    func getRow(indexRow: Int, indexPart: Int) -> Row? {
         guard projectParts.indices.contains(indexPart), indexRow >= 0 else { return nil }
         var remaining = indexRow
         for group in projectParts[indexPart].rowGroups {
             if remaining < group.count {
-                var copy = group
-                copy.rowCounter = remaining
-                return copy
+                return group.getRow(at: remaining)
             }
             remaining -= group.count
         }
         return nil
-    }
-
-    func getRow(indexRow: Int, indexPart: Int) -> Row? {
-        getRowGroup(indexRow: indexRow, indexPart: indexPart)?.currentRow
     }
 
     mutating func addProjectPart(name: String) {
