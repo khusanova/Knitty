@@ -7,15 +7,6 @@
 
 import Foundation
 
-enum DataError: Error {
-    case fileNotFound
-}
-
-enum SaveError: Error {
-    case encodingError
-    case writeError
-}
-
 enum ProjectProgressError: Error {
     case partIndexOutOfRange
     case rowIndexOutOfRange

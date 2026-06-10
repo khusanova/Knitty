@@ -21,10 +21,7 @@ import Foundation
         rowCounter < project.totalRowCount(of: partIndex)
     }
 
-    private var project: Project {
-        get { projectVM.project }
-        set { projectVM.project = newValue }
-    }
+    private var project: Project { projectVM.project }
 
     init(projectVM: ProjectViewModel, partIndex: Int) {
         self.projectVM = projectVM

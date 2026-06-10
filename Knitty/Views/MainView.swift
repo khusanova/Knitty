@@ -6,37 +6,40 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct MainView: View {
-    @Environment(ProjectStore.self) private var store
+    @Environment(\.modelContext) private var context
+    @Query(sort: \Project.name) private var projects: [Project]
     @State private var openedProject: Project?
-    @State private var renamingEntry: ProjectIndexEntry?
+    @State private var renamingProject: Project?
     @State private var renameText = ""
 
     private var isRenameValid: Bool {
-        guard let entry = renamingEntry else { return false }
+        guard let project = renamingProject else { return false }
         let trimmed = renameText.trimmingCharacters(in: .whitespaces)
         guard !trimmed.isEmpty else { return false }
-        return !store.entries.contains { $0.id != entry.id && $0.name == renameText }
+        return !projects.contains { $0 !== project && $0.name == renameText }
     }
 
     var body: some View {
         NavigationStack {
-            if store.entries.isEmpty {
+            if projects.isEmpty {
                 Text("No saved projects yet.")
                     .navigationTitle("Knitty")
             } else {
-                List(store.entries) { entry in
-                    NavigationLink(entry.name) {
-                        ProjectView(projectID: entry.id, store: store)
+                List(projects) { project in
+                    NavigationLink(project.name) {
+                        ProjectView(project: project)
                     }
                     .swipeActions {
                         Button("Delete", role: .destructive) {
-                            try? store.deleteProject(id: entry.id)
+                            context.delete(project)
+                            try? context.save()
                         }
                         Button("Rename") {
-                            renamingEntry = entry
-                            renameText = entry.name
+                            renamingProject = project
+                            renameText = project.name
                         }
                         .tint(.blue)
                     }
@@ -47,32 +50,32 @@ struct MainView: View {
                 buttonLabel: "Add new project",
                 placeholder: "Project name",
                 defaultName: "New project",
-                existingNames: store.entries.map(\.name),
+                existingNames: projects.map(\.name),
                 onSubmit: { name in
-                    let newProject = store.createProject(name: name)
-                    try? store.saveProject(newProject)
+                    let newProject = Project(name: name, projectParts: [])
+                    context.insert(newProject)
+                    try? context.save()
                     openedProject = newProject
                 }
             )
             .navigationDestination(item: $openedProject) {
-                project in ProjectView(projectID: project.id, store: store)
+                project in ProjectView(project: project)
             }
             .alert(
                 "Rename project",
                 isPresented: Binding(
-                    get: { renamingEntry != nil },
-                    set: { if !$0 { renamingEntry = nil } }
+                    get: { renamingProject != nil },
+                    set: { if !$0 { renamingProject = nil } }
                 )
             ) {
                 TextField("Name", text: $renameText)
                 Button("Save") {
-                    if let entry = renamingEntry {
-                        try? store.renameProject(id: entry.id, to: renameText)
-                    }
-                    renamingEntry = nil
+                    renamingProject?.name = renameText
+                    try? context.save()
+                    renamingProject = nil
                 }
                 .disabled(!isRenameValid)
-                Button("Cancel", role: .cancel) { renamingEntry = nil }
+                Button("Cancel", role: .cancel) { renamingProject = nil }
             }
         }
     }
@@ -80,5 +83,5 @@ struct MainView: View {
 
 #Preview {
     MainView()
-        .environment(ProjectStore.preview())
+        .modelContainer(PreviewSupport.container)
 }

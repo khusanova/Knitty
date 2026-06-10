@@ -8,26 +8,17 @@
 import Foundation
 
 @Observable class ProjectViewModel {
-    let store: ProjectStore
     var project: Project
 
     @ObservationIgnored
     private var knittingViewModelCache: [Int: KnittingViewModel] = [:]
 
-    init(projectID: UUID? = nil, store: ProjectStore) {
-        self.store = store
-        let id = projectID
-            ?? UserDefaults.standard.string(forKey: "lastProjectID").flatMap(UUID.init)
-        if let id, let loaded = try? store.loadProject(id: id) {
-            self.project = loaded
-        } else {
-            self.project = Project.bananaSocks
-        }
-        UserDefaults.standard.set(self.project.id.uuidString, forKey: "lastProjectID")
+    init(project: Project) {
+        self.project = project
     }
 
     func save() {
-        try? store.saveProject(project)
+        try? project.modelContext?.save()
     }
 
     func addProjectPart(name: String) {

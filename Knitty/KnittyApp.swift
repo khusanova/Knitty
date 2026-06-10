@@ -10,24 +10,10 @@ import SwiftData
 
 @main
 struct KnittyApp: App {
-    private let container: ModelContainer
-    @State private var store: ProjectStore
-
-    init() {
-        do {
-            let container = try ModelContainer(for: Project.self)
-            self.container = container
-            _store = State(initialValue: ProjectStore(context: container.mainContext))
-        } catch {
-            fatalError("Failed to create ModelContainer: \(error)")
-        }
-    }
-
     var body: some Scene {
         WindowGroup {
             MainView()
-                .environment(store)
         }
-        .modelContainer(container)
+        .modelContainer(for: Project.self)
     }
 }

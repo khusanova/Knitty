@@ -194,6 +194,7 @@ private struct RowBlock: View {
 
 #Preview {
     NavigationStack {
-        EditorView(viewModel: ProjectViewModel(store: ProjectStore.preview()), partIndex: 0)
+        EditorView(viewModel: ProjectViewModel(project: PreviewSupport.project), partIndex: 0)
     }
+    .modelContainer(PreviewSupport.container)
 }

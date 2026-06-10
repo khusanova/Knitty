@@ -61,5 +61,6 @@ struct KnittingView: View {
 }
 
 #Preview {
-    ProjectView(store: ProjectStore.preview())
+    ProjectView(project: PreviewSupport.project)
+        .modelContainer(PreviewSupport.container)
 }

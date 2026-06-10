@@ -13,8 +13,8 @@ struct ProjectView: View {
     @State var viewModel: ProjectViewModel
     @State private var editingPartIndex: Int?
 
-    init(projectID: UUID? = nil, store: ProjectStore) {
-        self._viewModel = State(initialValue: ProjectViewModel(projectID: projectID, store: store))
+    init(project: Project) {
+        self._viewModel = State(initialValue: ProjectViewModel(project: project))
     }
 
     var body: some View {
@@ -49,5 +49,6 @@ struct ProjectView: View {
 }
 
 #Preview {
-    ProjectView(store: ProjectStore.preview())
+    ProjectView(project: PreviewSupport.project)
+        .modelContainer(PreviewSupport.container)
 }

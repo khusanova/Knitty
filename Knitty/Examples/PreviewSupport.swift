@@ -8,16 +8,20 @@
 import Foundation
 import SwiftData
 
-extension ProjectStore {
-    /// A store backed by an in-memory container, seeded with the example project.
-    @MainActor
-    static func preview() -> ProjectStore {
+/// In-memory SwiftData container seeded with the example project, for previews.
+@MainActor
+enum PreviewSupport {
+    static let container: ModelContainer = {
         let container = try! ModelContainer(
             for: Project.self,
             configurations: ModelConfiguration(isStoredInMemoryOnly: true)
         )
-        let store = ProjectStore(context: container.mainContext)
-        try? store.saveProject(Project.bananaSocks)
-        return store
+        container.mainContext.insert(Project.bananaSocks)
+        try? container.mainContext.save()
+        return container
+    }()
+
+    static var project: Project {
+        try! container.mainContext.fetch(FetchDescriptor<Project>()).first!
     }
 }
