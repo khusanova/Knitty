@@ -6,23 +6,45 @@
 //
 
 import Foundation
+import SwiftData
 
-struct Project: Codable, Identifiable, Hashable {
-    static func == (lhs: Project, rhs: Project) -> Bool { lhs.id == rhs.id }
-    func hash(into hasher: inout Hasher) { hasher.combine(id) }
-
+@Model
+final class Project {
     var id = UUID()
-    var name: String
-    var projectParts: [ProjectPart]
+    var name: String = ""
     var currentProjectPart: Int?
     var notes: String?
     var projectURL: URL?
 
+    @Relationship(deleteRule: .cascade, inverse: \ProjectPart.project)
+    private var parts: [ProjectPart] = []
+
+    /// Parts in display order. The setter reassigns `orderIndex` from array
+    /// position and deletes parts that were removed, so index-based mutation
+    /// works as it did with a plain array.
+    var projectParts: [ProjectPart] {
+        get { parts.sorted { $0.orderIndex < $1.orderIndex } }
+        set {
+            let removed = parts.filter { part in !newValue.contains { $0 === part } }
+            for (index, part) in newValue.enumerated() {
+                part.orderIndex = index
+            }
+            parts = newValue
+            removed.forEach { modelContext?.delete($0) }
+        }
+    }
+
     init(name: String, projectParts: [(String, [RowGroup])], notes: String? = nil, projectURL: URL? = nil) {
         self.name = name
-        self.projectParts = projectParts.map { ProjectPart(name: $0.0, rowGroups: $0.1) }
         self.notes = notes
         self.projectURL = projectURL
+        var newParts: [ProjectPart] = []
+        for (index, spec) in projectParts.enumerated() {
+            let part = ProjectPart(name: spec.0, rowGroups: spec.1)
+            part.orderIndex = index
+            newParts.append(part)
+        }
+        self.parts = newParts
     }
 
     func totalRowCount(of projectPartIndex: Int) -> Int {
@@ -43,22 +65,22 @@ struct Project: Codable, Identifiable, Hashable {
         return nil
     }
 
-    mutating func addProjectPart(name: String) {
-        self.projectParts.append(ProjectPart(name: name, rowGroups: []))
+    func addProjectPart(name: String) {
+        projectParts.append(ProjectPart(name: name, rowGroups: []))
     }
 
-    mutating func renameProjectPart(at index: Int, to newName: String) {
+    func renameProjectPart(at index: Int, to newName: String) {
         guard projectParts.indices.contains(index) else { return }
         projectParts[index].name = newName
     }
 
-    mutating func deleteProjectPart(at index: Int) {
+    func deleteProjectPart(at index: Int) {
         guard projectParts.indices.contains(index) else { return }
         projectParts.remove(at: index)
     }
 
     @discardableResult
-    mutating func addEmptyRowGroup(toPartIndex partIndex: Int) -> UUID? {
+    func addEmptyRowGroup(toPartIndex partIndex: Int) -> UUID? {
         guard projectParts.indices.contains(partIndex) else { return nil }
         let newRowGroup = RowGroup(rows: [])
         projectParts[partIndex].rowGroups.append(newRowGroup)
@@ -68,7 +90,7 @@ struct Project: Codable, Identifiable, Hashable {
     /// Appends a row to every group in the run `[runStart, runStart + runLength)`.
     /// Editor groups consecutive content-equal RowGroups into a single visual block;
     /// this keeps all copies in that block in sync.
-    mutating func appendRow(
+    func appendRow(
         toPartIndex partIndex: Int,
         runStart: Int,
         runLength: Int,
@@ -87,7 +109,7 @@ struct Project: Codable, Identifiable, Hashable {
     /// Replaces `[startIndex, startIndex + oldCount)` with `newCount` copies of the first
     /// group in the run: the original is preserved (id and progress intact), the additional
     /// copies are fresh (new UUIDs, rowCounter = 0).
-    mutating func setRowGroupRepeatCount(
+    func setRowGroupRepeatCount(
         toPartIndex partIndex: Int,
         atOrderIndex startIndex: Int,
         oldCount: Int,
@@ -109,7 +131,7 @@ struct Project: Codable, Identifiable, Hashable {
         projectParts[partIndex].rowGroups.replaceSubrange(startIndex..<endIndex, with: replacement)
     }
 
-    mutating func deleteRowGroup(
+    func deleteRowGroup(
         fromPartIndex partIndex: Int,
         atOrderIndex startIndex: Int,
         oldCount: Int
@@ -122,23 +144,23 @@ struct Project: Codable, Identifiable, Hashable {
         projectParts[partIndex].rowGroups.removeSubrange(startIndex..<endIndex)
     }
 
-    mutating func knit(partIndex: Int) throws {
+    func knit(partIndex: Int) throws {
         guard projectParts.indices.contains(partIndex) else {
             throw ProjectProgressError.partIndexOutOfRange
         }
-        guard let groupIndex = projectParts[partIndex].rowGroups.firstIndex(where: { !$0.isFinished }) else {
+        guard let group = projectParts[partIndex].rowGroups.first(where: { !$0.isFinished }) else {
             throw ProjectProgressError.rowIndexOutOfRange
         }
-        projectParts[partIndex].rowGroups[groupIndex].rowCounter += 1
+        group.rowCounter += 1
     }
 
-    mutating func unravel(partIndex: Int) throws {
+    func unravel(partIndex: Int) throws {
         guard projectParts.indices.contains(partIndex) else {
             throw ProjectProgressError.partIndexOutOfRange
         }
-        guard let groupIndex = projectParts[partIndex].rowGroups.lastIndex(where: { $0.rowCounter > 0 }) else {
+        guard let group = projectParts[partIndex].rowGroups.last(where: { $0.rowCounter > 0 }) else {
             throw ProjectProgressError.rowIndexOutOfRange
         }
-        projectParts[partIndex].rowGroups[groupIndex].rowCounter -= 1
+        group.rowCounter -= 1
     }
 }

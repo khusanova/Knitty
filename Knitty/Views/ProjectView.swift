@@ -49,5 +49,5 @@ struct ProjectView: View {
 }
 
 #Preview {
-    ProjectView(store: ProjectStore())
+    ProjectView(store: ProjectStore.preview())
 }

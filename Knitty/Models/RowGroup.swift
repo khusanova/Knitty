@@ -6,18 +6,23 @@
 //
 
 import Foundation
+import SwiftData
 
 struct Row: Identifiable, Codable {
     var id = UUID()
     var instructions: String
 }
 
-struct RowGroup: Identifiable, Codable {
+@Model
+final class RowGroup {
     var id = UUID()
-    var rows: [Row]
+    var rows: [Row] = []
     var rowCounter: Int = 0
     var name: String?
     var notes: String?
+    /// Position within the owning part; SwiftData to-many relationships are unordered.
+    var orderIndex: Int = 0
+    var part: ProjectPart?
 
     var count: Int { rows.count }
     var isFinished: Bool { rowCounter >= rows.count }
@@ -37,12 +42,12 @@ struct RowGroup: Identifiable, Codable {
         return rows[index]
     }
 
-    mutating func updateRow(at index: Int, newRow: Row) {
+    func updateRow(at index: Int, newRow: Row) {
         guard rows.indices.contains(index) else { return }
         rows[index] = newRow
     }
 
-    mutating func appendRow(newRow: Row) {
+    func appendRow(newRow: Row) {
         rows.append(newRow)
     }
 }

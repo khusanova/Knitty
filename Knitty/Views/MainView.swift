@@ -80,5 +80,5 @@ struct MainView: View {
 
 #Preview {
     MainView()
-        .environment(ProjectStore())
+        .environment(ProjectStore.preview())
 }
