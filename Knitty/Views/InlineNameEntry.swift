@@ -7,12 +7,13 @@
 
 import SwiftUI
 
-struct InlineNameEntry: View {
+struct InlineNameEntry<Accessory: View>: View {
     let buttonLabel: String
     let placeholder: String
     let defaultName: String
     let existingNames: [String]
     let onSubmit: (String) -> Void
+    let accessory: () -> Accessory
 
     @State private var isAdding = false
     @State private var name: String
@@ -24,13 +25,15 @@ struct InlineNameEntry: View {
         placeholder: String,
         defaultName: String,
         existingNames: [String],
-        onSubmit: @escaping (String) -> Void
+        onSubmit: @escaping (String) -> Void,
+        @ViewBuilder accessory: @escaping () -> Accessory = { EmptyView() }
     ) {
         self.buttonLabel = buttonLabel
         self.placeholder = placeholder
         self.defaultName = defaultName
         self.existingNames = existingNames
         self.onSubmit = onSubmit
+        self.accessory = accessory
         self._name = State(initialValue: defaultName)
     }
 
@@ -44,6 +47,7 @@ struct InlineNameEntry: View {
             isFocused = true
         }
         if isAdding {
+            accessory()
             TextField(placeholder, text: $name)
                 .focused($isFocused)
                 .onSubmit(handleSubmit)

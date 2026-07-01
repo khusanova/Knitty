@@ -14,6 +14,7 @@ struct MainView: View {
     @State private var openedProject: Project?
     @State private var renamingProject: Project?
     @State private var renameText = ""
+    @State private var selectedTemplate: ProjectTemplate = .blank
 
     private var isRenameValid: Bool {
         guard let project = renamingProject else { return false }
@@ -52,10 +53,18 @@ struct MainView: View {
                 defaultName: "New project",
                 existingNames: projects.map(\.name),
                 onSubmit: { name in
-                    let newProject = Project(name: name, projectParts: [])
+                    let newProject = selectedTemplate.makeProject(name: name)
                     context.insert(newProject)
                     try? context.save()
+                    selectedTemplate = .blank
                     openedProject = newProject
+                },
+                accessory: {
+                    Picker("Template", selection: $selectedTemplate) {
+                        ForEach(ProjectTemplate.allCases) { template in
+                            Text(template.displayName).tag(template)
+                        }
+                    }
                 }
             )
             .navigationDestination(item: $openedProject) {
